@@ -195,7 +195,31 @@ class WC_Email_Verification {
             'code_length' => 6,
             'rate_limit' => 5, // attempts per hour
             'email_subject' => __('Your Verification Code - {site_name}', 'wc-email-verification'),
-            'email_template' => __('Your verification code is: <strong>{verification_code}</strong><br><br>This code will expire in {expiry_time} minutes.<br><br>If you didn\'t request this code, please ignore this email.', 'wc-email-verification'),
+            'email_template' => '<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff;">
+    <div style="background: #0073aa; color: white; padding: 20px; text-align: center;">
+        <h1 style="margin: 0; font-size: 24px;">Email Verification</h1>
+    </div>
+    <div style="padding: 30px 20px;">
+        <h2 style="color: #333; margin-bottom: 20px;">Verify Your Email Address</h2>
+        <p style="color: #666; font-size: 16px; line-height: 1.6;">Thank you for registering with {site_name}. To complete your registration, please verify your email address using the code below:</p>
+        
+        <div style="background: #f8f9fa; border: 2px solid #0073aa; border-radius: 8px; padding: 20px; text-align: center; margin: 30px 0;">
+            <p style="margin: 0 0 10px 0; color: #333; font-size: 18px; font-weight: bold;">Your Verification Code:</p>
+            <div style="background: #0073aa; color: white; font-size: 32px; font-weight: bold; padding: 15px; border-radius: 4px; letter-spacing: 3px; margin: 10px 0;">{verification_code}</div>
+        </div>
+        
+        <p style="color: #666; font-size: 14px; margin: 20px 0;">This code will expire in <strong>{expiry_time} minutes</strong>.</p>
+        
+        <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 4px; padding: 15px; margin: 20px 0;">
+            <p style="margin: 0; color: #856404; font-size: 14px;"><strong>Security Notice:</strong> If you didn\'t request this verification code, please ignore this email. Your account security is important to us.</p>
+        </div>
+        
+        <p style="color: #666; font-size: 14px; margin: 30px 0 0 0;">Best regards,<br>The {site_name} Team</p>
+    </div>
+    <div style="background: #f8f9fa; padding: 20px; text-align: center; border-top: 1px solid #e9ecef;">
+        <p style="margin: 0; color: #6c757d; font-size: 12px;">This email was sent from {site_name} | <a href="{site_url}" style="color: #0073aa;">Visit our website</a></p>
+    </div>
+</div>',
             'from_name' => get_bloginfo('name'),
             'from_email' => get_option('admin_email'),
         );
@@ -240,7 +264,31 @@ class WC_Email_Verification {
             'code_length' => 6,
             'rate_limit' => 5,
             'email_subject' => __('Your Verification Code - {site_name}', 'wc-email-verification'),
-            'email_template' => __('Your verification code is: <strong>{verification_code}</strong><br><br>This code will expire in {expiry_time} minutes.<br><br>If you didn\'t request this code, please ignore this email.', 'wc-email-verification'),
+            'email_template' => '<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff;">
+    <div style="background: #0073aa; color: white; padding: 20px; text-align: center;">
+        <h1 style="margin: 0; font-size: 24px;">Email Verification</h1>
+    </div>
+    <div style="padding: 30px 20px;">
+        <h2 style="color: #333; margin-bottom: 20px;">Verify Your Email Address</h2>
+        <p style="color: #666; font-size: 16px; line-height: 1.6;">Thank you for registering with {site_name}. To complete your registration, please verify your email address using the code below:</p>
+        
+        <div style="background: #f8f9fa; border: 2px solid #0073aa; border-radius: 8px; padding: 20px; text-align: center; margin: 30px 0;">
+            <p style="margin: 0 0 10px 0; color: #333; font-size: 18px; font-weight: bold;">Your Verification Code:</p>
+            <div style="background: #0073aa; color: white; font-size: 32px; font-weight: bold; padding: 15px; border-radius: 4px; letter-spacing: 3px; margin: 10px 0;">{verification_code}</div>
+        </div>
+        
+        <p style="color: #666; font-size: 14px; margin: 20px 0;">This code will expire in <strong>{expiry_time} minutes</strong>.</p>
+        
+        <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 4px; padding: 15px; margin: 20px 0;">
+            <p style="margin: 0; color: #856404; font-size: 14px;"><strong>Security Notice:</strong> If you didn\'t request this verification code, please ignore this email. Your account security is important to us.</p>
+        </div>
+        
+        <p style="color: #666; font-size: 14px; margin: 30px 0 0 0;">Best regards,<br>The {site_name} Team</p>
+    </div>
+    <div style="background: #f8f9fa; padding: 20px; text-align: center; border-top: 1px solid #e9ecef;">
+        <p style="margin: 0; color: #6c757d; font-size: 12px;">This email was sent from {site_name} | <a href="{site_url}" style="color: #0073aa;">Visit our website</a></p>
+    </div>
+</div>',
             'from_name' => get_bloginfo('name'),
             'from_email' => get_option('admin_email'),
         );

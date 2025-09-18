@@ -27,7 +27,6 @@
         
         // Initialize
         init: function() {
-            console.log('WC Email Verification: Initializing...');
             this.bindEvents();
             this.monitorEmailField();
             this.setupInitialState();
@@ -124,7 +123,6 @@
         // Get current email value
         getCurrentEmail: function() {
             var email = $('#billing_email').val() || $('#reg_email').val() || '';
-            console.log('WC Email Verification: getCurrentEmail - billing_email:', $('#billing_email').val(), 'reg_email:', $('#reg_email').val(), 'result:', email);
             return email.trim();
         },
         
@@ -151,14 +149,10 @@
             var email = this.getCurrentEmail();
             var isValidEmail = this.isValidEmail(email);
             
-            console.log('WC Email Verification: toggleVerificationButton - email:', email, 'isValid:', isValidEmail);
-            
             if (isValidEmail) {
-                console.log('WC Email Verification: Showing verification section');
                 $('#wc-email-verification-wrapper').show();
                 $('#wc-email-verification-trigger').show();
             } else {
-                console.log('WC Email Verification: Hiding verification section');
                 $('#wc-email-verification-wrapper').hide();
                 $('#wc-email-verification-trigger').hide();
                 $('#wc-email-verification-code-section').hide();
@@ -338,12 +332,15 @@
         setButtonLoading: function(button, loading) {
             if (loading) {
                 button.prop('disabled', true);
-                button.find('.btn-text').hide();
-                button.find('.btn-loading').show();
+                var originalText = button.text();
+                button.data('original-text', originalText);
+                button.text('Sending...');
             } else {
                 button.prop('disabled', false);
-                button.find('.btn-text').show();
-                button.find('.btn-loading').hide();
+                var originalText = button.data('original-text');
+                if (originalText) {
+                    button.text(originalText);
+                }
             }
         },
         
@@ -385,12 +382,10 @@
                 // Enable buttons
                 $checkoutBtn.prop('disabled', false).removeClass('disabled');
                 $registerBtn.prop('disabled', false).removeClass('disabled');
-                console.log('WC Email Verification: Submit buttons enabled');
             } else {
                 // Disable buttons
                 $checkoutBtn.prop('disabled', true).addClass('disabled');
                 $registerBtn.prop('disabled', true).addClass('disabled');
-                console.log('WC Email Verification: Submit buttons disabled');
             }
         },
         
@@ -411,11 +406,10 @@
                         // Email is already verified
                         self.state.emailVerified = true;
                         self.showSuccessState();
-                        console.log('WC Email Verification: Email already verified');
                     }
                 },
                 error: function(xhr, status, error) {
-                    console.log('WC Email Verification: Error checking verification status:', error);
+                    // Silent error handling
                 }
             });
         },

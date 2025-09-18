@@ -99,8 +99,7 @@ class WC_Email_Verification_Email {
      * @return string
      */
     private function get_email_content($verification_code, $expiry_minutes) {
-        $settings = WC_Email_Verification::get_instance()->get_settings();
-        $template = $settings['email_template'] ?? $this->get_default_email_template();
+        $template = $this->get_default_email_template();
         
         // Replace placeholders
         $content = str_replace(
@@ -109,8 +108,7 @@ class WC_Email_Verification_Email {
             $template
         );
         
-        // Wrap in HTML template
-        return $this->wrap_in_html_template($content);
+        return $content;
     }
     
     /**
@@ -119,67 +117,43 @@ class WC_Email_Verification_Email {
      * @return string
      */
     private function get_default_email_template() {
-        return sprintf(
-            '<div style="text-align: center; padding: 20px; font-family: Arial, sans-serif;">
-                <h2 style="color: #333; margin-bottom: 20px;">%s</h2>
-                <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
-                    <p style="font-size: 18px; margin: 0 0 10px 0;">%s</p>
-                    <div style="background: #007cba; color: white; font-size: 24px; font-weight: bold; padding: 15px; border-radius: 4px; letter-spacing: 3px; margin: 15px 0;">%s</div>
-                </div>
-                <p style="color: #666; font-size: 14px; margin: 20px 0;">%s</p>
-                <p style="color: #999; font-size: 12px; margin: 30px 0 0 0;">%s</p>
-            </div>',
-            __('Email Verification', 'wc-email-verification'),
-            __('Your verification code is:', 'wc-email-verification'),
-            '{verification_code}',
-            sprintf(__('This code will expire in %s minutes.', 'wc-email-verification'), '{expiry_time}'),
-            __('If you didn\'t request this code, please ignore this email.', 'wc-email-verification')
-        );
+        $settings = WC_Email_Verification::get_instance()->get_settings();
+        return $settings['email_template'] ?? $this->get_fallback_template();
     }
     
     /**
-     * Wrap content in HTML template
+     * Get fallback email template
      *
-     * @param string $content
      * @return string
      */
-    private function wrap_in_html_template($content) {
-        $settings = WC_Email_Verification::get_instance()->get_settings();
-        $from_name = $settings['from_name'] ?? get_bloginfo('name');
+    private function get_fallback_template() {
+        return '<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff;">
+    <div style="background: #0073aa; color: white; padding: 20px; text-align: center;">
+        <h1 style="margin: 0; font-size: 24px;">Email Verification</h1>
+    </div>
+    <div style="padding: 30px 20px;">
+        <h2 style="color: #333; margin-bottom: 20px;">Verify Your Email Address</h2>
+        <p style="color: #666; font-size: 16px; line-height: 1.6;">Thank you for registering with {site_name}. To complete your registration, please verify your email address using the code below:</p>
         
-        return sprintf(
-            '<!DOCTYPE html>
-            <html>
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>%s</title>
-                %s
-            </head>
-            <body style="margin: 0; padding: 0; background-color: #f4f4f4; font-family: Arial, sans-serif;">
-                <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-                    <div style="background: linear-gradient(135deg, #007cba 0%%, #005a87 100%%); padding: 30px; text-align: center;">
-                        <h1 style="color: white; margin: 0; font-size: 24px;">%s</h1>
-                    </div>
-                    <div style="padding: 40px 30px;">
-                        %s
-                    </div>
-                    <div style="background-color: #f8f9fa; padding: 20px; text-align: center; border-top: 1px solid #e9ecef;">
-                        <p style="margin: 0; color: #6c757d; font-size: 12px;">
-                            %s | %s
-                        </p>
-                    </div>
-                </div>
-            </body>
-            </html>',
-            __('Email Verification', 'wc-email-verification'),
-            $this->get_email_styles(),
-            $from_name,
-            $content,
-            sprintf(__('This email was sent from %s', 'wc-email-verification'), get_bloginfo('name')),
-            sprintf(__('If you have any questions, please contact us at %s', 'wc-email-verification'), get_option('admin_email'))
-        );
+        <div style="background: #f8f9fa; border: 2px solid #0073aa; border-radius: 8px; padding: 20px; text-align: center; margin: 30px 0;">
+            <p style="margin: 0 0 10px 0; color: #333; font-size: 18px; font-weight: bold;">Your Verification Code:</p>
+            <div style="background: #0073aa; color: white; font-size: 32px; font-weight: bold; padding: 15px; border-radius: 4px; letter-spacing: 3px; margin: 10px 0;">{verification_code}</div>
+        </div>
+        
+        <p style="color: #666; font-size: 14px; margin: 20px 0;">This code will expire in <strong>{expiry_time} minutes</strong>.</p>
+        
+        <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 4px; padding: 15px; margin: 20px 0;">
+            <p style="margin: 0; color: #856404; font-size: 14px;"><strong>Security Notice:</strong> If you didn\'t request this verification code, please ignore this email. Your account security is important to us.</p>
+        </div>
+        
+        <p style="color: #666; font-size: 14px; margin: 30px 0 0 0;">Best regards,<br>The {site_name} Team</p>
+    </div>
+    <div style="background: #f8f9fa; padding: 20px; text-align: center; border-top: 1px solid #e9ecef;">
+        <p style="margin: 0; color: #6c757d; font-size: 12px;">This email was sent from {site_name} | <a href="{site_url}" style="color: #0073aa;">Visit our website</a></p>
+    </div>
+</div>';
     }
+    
     
     /**
      * Get email styles

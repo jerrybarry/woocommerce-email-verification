@@ -193,8 +193,13 @@ class WC_Email_Verification_Admin {
                             <tr>
                                 <th scope="row"><?php _e('Email Template', 'wc-email-verification'); ?></th>
                                 <td>
-                                    <textarea name="wc_email_verification_settings[email_template]" rows="10" cols="50" class="large-text"><?php echo esc_textarea($settings['email_template'] ?? $this->get_default_email_template()); ?></textarea>
+                                    <textarea name="wc_email_verification_settings[email_template]" rows="15" cols="50" class="large-text"><?php echo esc_textarea($settings['email_template'] ?? $this->get_default_email_template()); ?></textarea>
                                     <p class="description"><?php _e('Available placeholders: {verification_code}, {expiry_time}, {site_name}, {site_url}', 'wc-email-verification'); ?></p>
+                                    <div style="margin-top: 10px;">
+                                        <button type="button" id="preview-email-template" class="button"><?php _e('Preview Template', 'wc-email-verification'); ?></button>
+                                        <button type="button" id="reset-email-template" class="button"><?php _e('Reset to Default', 'wc-email-verification'); ?></button>
+                                    </div>
+                                    <div id="email-template-preview" style="margin-top: 15px; padding: 15px; border: 1px solid #ddd; background: #f9f9f9; display: none;"></div>
                                 </td>
                             </tr>
                             <tr>
@@ -273,6 +278,28 @@ class WC_Email_Verification_Admin {
                         $('#send-test-email').prop('disabled', false).text('<?php _e('Send Test Email', 'wc-email-verification'); ?>');
                     }
                 });
+            });
+            
+            // Email template preview
+            $('#preview-email-template').on('click', function() {
+                var template = $('textarea[name*="email_template"]').val();
+                var subject = $('input[name*="email_subject"]').val();
+                
+                // Replace placeholders
+                var preview = template
+                    .replace(/{verification_code}/g, '123456')
+                    .replace(/{expiry_time}/g, '10')
+                    .replace(/{site_name}/g, '<?php echo esc_js(get_bloginfo('name')); ?>')
+                    .replace(/{site_url}/g, '<?php echo esc_js(home_url()); ?>');
+                
+                $('#email-template-preview').html('<h4>Preview:</h4><div style="border: 1px solid #ccc; padding: 15px; background: white;">' + preview + '</div>').show();
+            });
+            
+            // Reset email template
+            $('#reset-email-template').on('click', function() {
+                if (confirm('<?php _e('Are you sure you want to reset the email template to default?', 'wc-email-verification'); ?>')) {
+                    $('textarea[name*="email_template"]').val('<?php echo esc_js($this->get_default_email_template()); ?>');
+                }
             });
         });
         </script>
@@ -387,7 +414,31 @@ class WC_Email_Verification_Admin {
      * @return string
      */
     private function get_default_email_template() {
-        return __('Your verification code is: <strong>{verification_code}</strong><br><br>This code will expire in {expiry_time} minutes.<br><br>If you didn\'t request this code, please ignore this email.', 'wc-email-verification');
+        return '<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff;">
+    <div style="background: #0073aa; color: white; padding: 20px; text-align: center;">
+        <h1 style="margin: 0; font-size: 24px;">Email Verification</h1>
+    </div>
+    <div style="padding: 30px 20px;">
+        <h2 style="color: #333; margin-bottom: 20px;">Verify Your Email Address</h2>
+        <p style="color: #666; font-size: 16px; line-height: 1.6;">Thank you for registering with {site_name}. To complete your registration, please verify your email address using the code below:</p>
+        
+        <div style="background: #f8f9fa; border: 2px solid #0073aa; border-radius: 8px; padding: 20px; text-align: center; margin: 30px 0;">
+            <p style="margin: 0 0 10px 0; color: #333; font-size: 18px; font-weight: bold;">Your Verification Code:</p>
+            <div style="background: #0073aa; color: white; font-size: 32px; font-weight: bold; padding: 15px; border-radius: 4px; letter-spacing: 3px; margin: 10px 0;">{verification_code}</div>
+        </div>
+        
+        <p style="color: #666; font-size: 14px; margin: 20px 0;">This code will expire in <strong>{expiry_time} minutes</strong>.</p>
+        
+        <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 4px; padding: 15px; margin: 20px 0;">
+            <p style="margin: 0; color: #856404; font-size: 14px;"><strong>Security Notice:</strong> If you didn\'t request this verification code, please ignore this email. Your account security is important to us.</p>
+        </div>
+        
+        <p style="color: #666; font-size: 14px; margin: 30px 0 0 0;">Best regards,<br>The {site_name} Team</p>
+    </div>
+    <div style="background: #f8f9fa; padding: 20px; text-align: center; border-top: 1px solid #e9ecef;">
+        <p style="margin: 0; color: #6c757d; font-size: 12px;">This email was sent from {site_name} | <a href="{site_url}" style="color: #0073aa;">Visit our website</a></p>
+    </div>
+</div>';
     }
     
     /**

@@ -43,27 +43,12 @@ class WC_Email_Verification_Frontend {
      * Add verification section to checkout
      */
     public function add_checkout_verification() {
-        // Debug output
-        if (defined('WP_DEBUG') && WP_DEBUG) {
-            error_log('WC Email Verification: add_checkout_verification called');
-        }
-        
         if (WC_Email_Verification::get_instance()->get_setting('enabled', 'yes') !== 'yes') {
-            if (defined('WP_DEBUG') && WP_DEBUG) {
-                error_log('WC Email Verification: Plugin disabled');
-            }
             return;
         }
         
         if (WC_Email_Verification::get_instance()->get_setting('checkout_required', 'yes') !== 'yes') {
-            if (defined('WP_DEBUG') && WP_DEBUG) {
-                error_log('WC Email Verification: Checkout verification disabled');
-            }
             return;
-        }
-        
-        if (defined('WP_DEBUG') && WP_DEBUG) {
-            error_log('WC Email Verification: Rendering checkout verification section');
         }
         
         $this->render_verification_section('checkout');
@@ -129,27 +114,12 @@ class WC_Email_Verification_Frontend {
      * Add verification section to registration
      */
     public function add_registration_verification() {
-        // Debug output
-        if (defined('WP_DEBUG') && WP_DEBUG) {
-            error_log('WC Email Verification: add_registration_verification called');
-        }
-        
         if (WC_Email_Verification::get_instance()->get_setting('enabled', 'yes') !== 'yes') {
-            if (defined('WP_DEBUG') && WP_DEBUG) {
-                error_log('WC Email Verification: Plugin disabled');
-            }
             return;
         }
         
         if (WC_Email_Verification::get_instance()->get_setting('registration_required', 'yes') !== 'yes') {
-            if (defined('WP_DEBUG') && WP_DEBUG) {
-                error_log('WC Email Verification: Registration verification disabled');
-            }
             return;
-        }
-        
-        if (defined('WP_DEBUG') && WP_DEBUG) {
-            error_log('WC Email Verification: Rendering registration verification section');
         }
         
         $this->render_verification_section('registration');
@@ -158,14 +128,11 @@ class WC_Email_Verification_Frontend {
         ?>
         <script type="text/javascript">
         jQuery(document).ready(function($) {
-            console.log('WC Email Verification: Registration page script loaded');
-            
             // Hide verification section initially
             $('#wc-email-verification-wrapper').hide();
             
             // Monitor email field
             $(document).on('input keyup change blur paste', '#reg_email', function() {
-                console.log('WC Email Verification: Email field changed:', $(this).val());
                 var email = $(this).val().trim();
                 if (email && email.includes('@') && email.includes('.')) {
                     $('#wc-email-verification-wrapper').show();
@@ -235,10 +202,7 @@ class WC_Email_Verification_Frontend {
                     <h3><?php _e('Email Verification', 'wc-email-verification'); ?></h3>
                     <p><?php _e('Verify your email address to proceed', 'wc-email-verification'); ?></p>
                 </div>
-                <button type="button" id="wc-send-verification-btn" class="button wc-email-verification-btn">
-                    <span class="btn-text"><?php _e('Send Verification Code', 'wc-email-verification'); ?></span>
-                    <span class="btn-loading" style="display: none;"><?php _e('Sending...', 'wc-email-verification'); ?></span>
-                </button>
+                <button type="button" id="wc-send-verification-btn" class="button wc-email-verification-btn"><?php _e('Send Verification Code', 'wc-email-verification'); ?></button>
             </div>
             
             <div id="wc-email-verification-code-section" class="wc-email-verification-code-section" style="display: none;">
@@ -255,10 +219,7 @@ class WC_Email_Verification_Frontend {
                            placeholder="<?php echo str_repeat('0', $code_length); ?>"
                            class="wc-verification-code-input"
                            autocomplete="one-time-code" />
-                    <button type="button" id="wc-verify-code-btn" class="button wc-email-verification-btn">
-                        <span class="btn-text"><?php _e('Verify', 'wc-email-verification'); ?></span>
-                        <span class="btn-loading" style="display: none;"><?php _e('Verifying...', 'wc-email-verification'); ?></span>
-                    </button>
+                    <button type="button" id="wc-verify-code-btn" class="button wc-email-verification-btn"><?php _e('Verify', 'wc-email-verification'); ?></button>
                 </div>
                 
                 <div class="wc-email-verification-code-actions">
