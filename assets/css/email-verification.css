@@ -1,0 +1,338 @@
+/**
+ * WooCommerce Email Verification Styles
+ * 
+ * @package WC_Email_Verification
+ */
+
+/* Main verification wrapper */
+.wc-email-verification-wrapper {
+    margin: 20px 0;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #f9f9f9;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: none; /* Initially hidden */
+}
+
+/* Verification trigger section */
+.wc-email-verification-trigger {
+    text-align: center;
+}
+
+.wc-email-verification-header h3 {
+    margin: 0 0 10px 0;
+    color: #333;
+    font-size: 18px;
+}
+
+.wc-email-verification-header p {
+    margin: 0 0 20px 0;
+    color: #666;
+    font-size: 14px;
+}
+
+/* Verification code section */
+.wc-email-verification-code-section {
+    margin-top: 20px;
+    padding: 20px;
+    background: #fff;
+    border-radius: 6px;
+    border: 1px solid #e0e0e0;
+}
+
+.wc-email-verification-code-header h4 {
+    margin: 0 0 10px 0;
+    color: #333;
+    font-size: 16px;
+}
+
+.wc-email-verification-code-header p {
+    margin: 0 0 20px 0;
+    color: #666;
+    font-size: 14px;
+}
+
+.wc-email-verification-code-input {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+.wc-verification-code-input {
+    width: 150px;
+    padding: 12px;
+    font-size: 18px;
+    text-align: center;
+    border: 2px solid #ddd;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    letter-spacing: 2px;
+    transition: border-color 0.3s ease;
+}
+
+.wc-verification-code-input:focus {
+    outline: none;
+    border-color: #007cba;
+    box-shadow: 0 0 0 2px rgba(0, 124, 186, 0.2);
+}
+
+.wc-email-verification-code-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.wc-email-verification-code-actions .button-link {
+    color: #007cba;
+    text-decoration: none;
+    font-size: 14px;
+    cursor: pointer;
+    border: none;
+    background: none;
+    padding: 0;
+}
+
+.wc-email-verification-code-actions .button-link:hover {
+    color: #005a87;
+    text-decoration: underline;
+}
+
+.wc-email-verification-timer {
+    color: #666;
+    font-size: 14px;
+}
+
+/* Success state */
+.wc-email-verification-success {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 20px;
+    background: #d4edda;
+    border: 1px solid #c3e6cb;
+    border-radius: 6px;
+    color: #155724;
+}
+
+.wc-email-verification-success .success-icon {
+    font-size: 24px;
+    font-weight: bold;
+    color: #28a745;
+}
+
+.wc-email-verification-success .success-message h4 {
+    margin: 0 0 5px 0;
+    font-size: 16px;
+}
+
+.wc-email-verification-success .success-message p {
+    margin: 0;
+    font-size: 14px;
+}
+
+/* Messages */
+.wc-verification-messages {
+    margin-top: 15px;
+}
+
+.wc-verification-message {
+    padding: 12px 16px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.wc-verification-message-success {
+    background: #d4edda;
+    border: 1px solid #c3e6cb;
+    color: #155724;
+}
+
+.wc-verification-message-error {
+    background: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+}
+
+.wc-verification-message-warning {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    color: #856404;
+}
+
+.wc-verification-message-info {
+    background: #d1ecf1;
+    border: 1px solid #bee5eb;
+    color: #0c5460;
+}
+
+/* Buttons */
+.wc-email-verification-btn {
+    background: #0073aa;
+    color: white;
+    border: 1px solid #0073aa;
+    padding: 12px 20px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    line-height: 1.4;
+    white-space: nowrap;
+}
+
+/* Fix button text spacing */
+.wc-email-verification-btn br {
+    display: none !important;
+}
+
+.wc-email-verification-btn .btn-text,
+.wc-email-verification-btn .btn-loading {
+    display: inline;
+}
+
+.wc-email-verification-btn:hover {
+    background: #005a87;
+    border-color: #005a87;
+    color: white;
+}
+
+.wc-email-verification-btn:disabled {
+    background: #ccc;
+    border-color: #ccc;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* Disabled submit buttons */
+button.disabled,
+button:disabled {
+    background: #ccc !important;
+    border-color: #ccc !important;
+    color: #666 !important;
+    cursor: not-allowed !important;
+    opacity: 0.6 !important;
+}
+
+button.disabled:hover,
+button:disabled:hover {
+    background: #ccc !important;
+    border-color: #ccc !important;
+    color: #666 !important;
+}
+
+.wc-email-verification-btn .btn-loading {
+    display: none;
+}
+
+/* Loading state */
+.wc-email-verification-btn:disabled .btn-text {
+    display: none;
+}
+
+.wc-email-verification-btn:disabled .btn-loading {
+    display: inline;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .wc-email-verification-wrapper {
+        margin: 15px 0;
+        padding: 15px;
+    }
+    
+    .wc-email-verification-code-input {
+        width: 120px;
+        font-size: 16px;
+        padding: 10px;
+    }
+    
+    .wc-email-verification-code-input {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .wc-email-verification-code-input .wc-email-verification-btn {
+        width: 100%;
+        margin-top: 10px;
+    }
+    
+    .wc-email-verification-success {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .wc-email-verification-code-actions {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+@media (max-width: 480px) {
+    .wc-verification-code-input {
+        width: 100px;
+        font-size: 14px;
+        padding: 8px;
+    }
+    
+    .wc-email-verification-header h3 {
+        font-size: 16px;
+    }
+    
+    .wc-email-verification-code-header h4 {
+        font-size: 14px;
+    }
+}
+
+/* Animation for showing/hiding elements */
+.wc-email-verification-trigger,
+.wc-email-verification-code-section,
+.wc-email-verification-success {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.wc-email-verification-trigger[style*="display: none"],
+.wc-email-verification-code-section[style*="display: none"],
+.wc-email-verification-success[style*="display: none"] {
+    opacity: 0;
+    transform: translateY(-10px);
+}
+
+/* Focus styles for accessibility */
+.wc-email-verification-btn:focus,
+.wc-verification-code-input:focus,
+.wc-email-verification-code-actions .button-link:focus {
+    outline: 2px solid #007cba;
+    outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .wc-email-verification-wrapper {
+        border: 2px solid #000;
+    }
+    
+    .wc-verification-code-input {
+        border: 2px solid #000;
+    }
+    
+    .wc-email-verification-btn {
+        border: 2px solid #000;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .wc-email-verification-trigger,
+    .wc-email-verification-code-section,
+    .wc-email-verification-success {
+        transition: none;
+    }
+}

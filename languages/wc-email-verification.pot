@@ -1,0 +1,405 @@
+# Copyright (C) 2025 WooCommerce Email Verification
+# This file is distributed under the same license as the WooCommerce Email Verification package.
+msgid ""
+msgstr ""
+"Project-Id-Version: WooCommerce Email Verification 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/wc-email-verification\n"
+"POT-Creation-Date: 2025-01-18 14:00:00+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2025-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+
+#: includes/class-wc-email-verification.php:45
+msgid "WooCommerce Email Verification requires WooCommerce to be installed and active."
+msgstr ""
+
+#: includes/class-wc-email-verification.php:95
+msgid "Your Verification Code - {site_name}"
+msgstr ""
+
+#: includes/class-wc-email-verification.php:96
+msgid "Your verification code is: <strong>{verification_code}</strong><br><br>This code will expire in {expiry_time} minutes.<br><br>If you didn't request this code, please ignore this email."
+msgstr ""
+
+#: includes/class-wc-email-verification-ajax.php:30
+msgid "Security check failed."
+msgstr ""
+
+#: includes/class-wc-email-verification-ajax.php:35
+msgid "Please enter a valid email address."
+msgstr ""
+
+#: includes/class-wc-email-verification-ajax.php:42
+msgid "Too many verification attempts. Please try again later."
+msgstr ""
+
+#: includes/class-wc-email-verification-ajax.php:65
+msgid "Database error occurred."
+msgstr ""
+
+#: includes/class-wc-email-verification-ajax.php:72
+msgid "Failed to send email. Please try again."
+msgstr ""
+
+#: includes/class-wc-email-verification-ajax.php:78
+msgid "Verification code sent to your email!"
+msgstr ""
+
+#: includes/class-wc-email-verification-ajax.php:95
+msgid "Invalid email or verification code."
+msgstr ""
+
+#: includes/class-wc-email-verification-ajax.php:102
+msgid "Invalid or expired verification code."
+msgstr ""
+
+#: includes/class-wc-email-verification-ajax.php:120
+msgid "Email verified successfully!"
+msgstr ""
+
+#: includes/class-wc-email-verification-ajax.php:150
+msgid "No pending verification found for this email."
+msgstr ""
+
+#: includes/class-wc-email-verification-ajax.php:155
+msgid "Too many resend attempts. Please try again later."
+msgstr ""
+
+#: includes/class-wc-email-verification-ajax.php:185
+msgid "New verification code sent to your email!"
+msgstr ""
+
+#: includes/class-wc-email-verification-frontend.php:45
+msgid "Email Verification"
+msgstr ""
+
+#: includes/class-wc-email-verification-frontend.php:46
+msgid "Verify your email address to proceed"
+msgstr ""
+
+#: includes/class-wc-email-verification-frontend.php:50
+msgid "Send Verification Code"
+msgstr ""
+
+#: includes/class-wc-email-verification-frontend.php:51
+msgid "Sending..."
+msgstr ""
+
+#: includes/class-wc-email-verification-frontend.php:58
+msgid "Enter Verification Code"
+msgstr ""
+
+#: includes/class-wc-email-verification-frontend.php:59
+msgid "We sent a %d-digit code to your email address"
+msgstr ""
+
+#: includes/class-wc-email-verification-frontend.php:70
+msgid "Verify"
+msgstr ""
+
+#: includes/class-wc-email-verification-frontend.php:71
+msgid "Verifying..."
+msgstr ""
+
+#: includes/class-wc-email-verification-frontend.php:77
+msgid "Resend Code"
+msgstr ""
+
+#: includes/class-wc-email-verification-frontend.php:80
+msgid "Resend available in %s"
+msgstr ""
+
+#: includes/class-wc-email-verification-frontend.php:90
+msgid "Email Verified!"
+msgstr ""
+
+#: includes/class-wc-email-verification-frontend.php:91
+msgid "Your email address has been successfully verified."
+msgstr ""
+
+#: includes/class-wc-email-verification-frontend.php:110
+msgid "Please verify your email address before placing your order."
+msgstr ""
+
+#: includes/class-wc-email-verification-frontend.php:130
+msgid "Email Verification Status"
+msgstr ""
+
+#: includes/class-wc-email-verification-frontend.php:135
+msgid "Email Verified"
+msgstr ""
+
+#: includes/class-wc-email-verification-frontend.php:138
+msgid "Yes"
+msgstr ""
+
+#: includes/class-wc-email-verification-frontend.php:140
+msgid "Verified on: %s"
+msgstr ""
+
+#: includes/class-wc-email-verification-frontend.php:142
+msgid "No"
+msgstr ""
+
+#: includes/class-wc-email-verification-admin.php:25
+msgid "Email Verification"
+msgstr ""
+
+#: includes/class-wc-email-verification-admin.php:26
+msgid "Email Verification"
+msgstr ""
+
+#: includes/class-wc-email-verification-admin.php:45
+msgid "Settings"
+msgstr ""
+
+#: includes/class-wc-email-verification-admin.php:55
+msgid "Settings saved successfully!"
+msgstr ""
+
+#: includes/class-wc-email-verification-admin.php:70
+msgid "Total Verifications"
+msgstr ""
+
+#: includes/class-wc-email-verification-admin.php:74
+msgid "Pending Verifications"
+msgstr ""
+
+#: includes/class-wc-email-verification-admin.php:78
+msgid "Success Rate"
+msgstr ""
+
+#: includes/class-wc-email-verification-admin.php:90
+msgid "General"
+msgstr ""
+
+#: includes/class-wc-email-verification-admin.php:91
+msgid "Email Settings"
+msgstr ""
+
+#: includes/class-wc-email-verification-admin.php:92
+msgid "Security"
+msgstr ""
+
+#: includes/class-wc-email-verification-admin.php:93
+msgid "Logs"
+msgstr ""
+
+#: includes/class-wc-email-verification-admin.php:98
+msgid "Enable Email Verification"
+msgstr ""
+
+#: includes/class-wc-email-verification-admin.php:99
+msgid "Enable email verification system"
+msgstr ""
+
+#: includes/class-wc-email-verification-admin.php:105
+msgid "Checkout Verification"
+msgstr ""
+
+#: includes/class-wc-email-verification-admin.php:106
+msgid "Require email verification for checkout"
+msgstr ""
+
+#: includes/class-wc-email-verification-admin.php:112
+msgid "Registration Verification"
+msgstr ""
+
+#: includes/class-wc-email-verification-admin.php:113
+msgid "Require email verification for registration"
+msgstr ""
+
+#: includes/class-wc-email-verification-admin.php:119
+msgid "Code Length"
+msgstr ""
+
+#: includes/class-wc-email-verification-admin.php:120
+msgid "digits"
+msgstr ""
+
+#: includes/class-wc-email-verification-admin.php:125
+msgid "Code Expiry (minutes)"
+msgstr ""
+
+#: includes/class-wc-email-verification-admin.php:127
+msgid "How long verification codes remain valid"
+msgstr ""
+
+#: includes/class-wc-email-verification-admin.php:135
+msgid "From Name"
+msgstr ""
+
+#: includes/class-wc-email-verification-admin.php:140
+msgid "From Email"
+msgstr ""
+
+#: includes/class-wc-email-verification-admin.php:145
+msgid "Email Subject"
+msgstr ""
+
+#: includes/class-wc-email-verification-admin.php:147
+msgid "Available placeholders: {site_name}"
+msgstr ""
+
+#: includes/class-wc-email-verification-admin.php:152
+msgid "Email Template"
+msgstr ""
+
+#: includes/class-wc-email-verification-admin.php:154
+msgid "Available placeholders: {verification_code}, {expiry_time}, {site_name}, {site_url}"
+msgstr ""
+
+#: includes/class-wc-email-verification-admin.php:159
+msgid "Test Email"
+msgstr ""
+
+#: includes/class-wc-email-verification-admin.php:160
+msgid "Enter email address"
+msgstr ""
+
+#: includes/class-wc-email-verification-admin.php:161
+msgid "Send Test Email"
+msgstr ""
+
+#: includes/class-wc-email-verification-admin.php:170
+msgid "Rate Limiting"
+msgstr ""
+
+#: includes/class-wc-email-verification-admin.php:172
+msgid "Maximum verification attempts per hour per IP/email"
+msgstr ""
+
+#: includes/class-wc-email-verification-admin.php:178
+msgid "Recent Verification Activity"
+msgstr ""
+
+#: includes/class-wc-email-verification-admin.php:200
+msgid "Email"
+msgstr ""
+
+#: includes/class-wc-email-verification-admin.php:201
+msgid "Action"
+msgstr ""
+
+#: includes/class-wc-email-verification-admin.php:202
+msgid "IP Address"
+msgstr ""
+
+#: includes/class-wc-email-verification-admin.php:203
+msgid "Date"
+msgstr ""
+
+#: includes/class-wc-email-verification-admin.php:210
+msgid "No verification activity found."
+msgstr ""
+
+#: includes/class-wc-email-verification-admin.php:220
+msgid "Your verification code is: <strong>{verification_code}</strong><br><br>This code will expire in {expiry_time} minutes.<br><br>If you didn't request this code, please ignore this email."
+msgstr ""
+
+#: includes/class-wc-email-verification-admin.php:240
+msgid "Please enter an email address"
+msgstr ""
+
+#: includes/class-wc-email-verification-admin.php:250
+msgid "Network error. Please try again."
+msgstr ""
+
+#: includes/class-wc-email-verification-admin.php:255
+msgid "Send Test Email"
+msgstr ""
+
+#: includes/class-wc-email-verification-admin.php:280
+msgid "Code length must be between 4 and 8 digits"
+msgstr ""
+
+#: includes/class-wc-email-verification-admin.php:285
+msgid "Code expiry must be between 1 and 60 minutes"
+msgstr ""
+
+#: includes/class-wc-email-verification-admin.php:290
+msgid "Rate limit must be between 1 and 20 attempts"
+msgstr ""
+
+#: includes/class-wc-email-verification-admin.php:295
+msgid "Please enter a valid from email address"
+msgstr ""
+
+#: includes/class-wc-email-verification-admin.php:300
+msgid "Please fix the following errors:"
+msgstr ""
+
+#: includes/class-wc-email-verification-admin.php:320
+msgid "Please enter a valid email address"
+msgstr ""
+
+#: includes/class-wc-email-verification-admin.php:330
+msgid "Sending..."
+msgstr ""
+
+#: includes/class-wc-email-verification-admin.php:340
+msgid "Please enter a valid email address"
+msgstr ""
+
+#: includes/class-wc-email-verification-admin.php:350
+msgid "Network error. Please try again."
+msgstr ""
+
+#: includes/class-wc-email-verification-admin.php:355
+msgid "Send Test Email"
+msgstr ""
+
+#: includes/class-wc-email-verification-email.php:45
+msgid "Email Verification"
+msgstr ""
+
+#: includes/class-wc-email-verification-email.php:50
+msgid "Your verification code is:"
+msgstr ""
+
+#: includes/class-wc-verification-email.php:55
+msgid "This code will expire in %s minutes."
+msgstr ""
+
+#: includes/class-wc-email-verification-email.php:57
+msgid "If you didn't request this code, please ignore this email."
+msgstr ""
+
+#: includes/class-wc-email-verification-email.php:75
+msgid "This email was sent from %s"
+msgstr ""
+
+#: includes/class-wc-email-verification-email.php:76
+msgid "If you have any questions, please contact us at %s"
+msgstr ""
+
+#: assets/js/email-verification.js:45
+msgid "Please enter a valid email address."
+msgstr ""
+
+#: assets/js/email-verification.js:46
+msgid "Verification code sent to your email!"
+msgstr ""
+
+#: assets/js/email-verification.js:47
+msgid "Email verified successfully!"
+msgstr ""
+
+#: assets/js/email-verification.js:48
+msgid "Invalid or expired verification code."
+msgstr ""
+
+#: assets/js/email-verification.js:49
+msgid "Network error. Please try again."
+msgstr ""
+
+#: assets/js/email-verification.js:50
+msgid "Please verify your email address before proceeding."
+msgstr ""
+
+#: assets/js/email-verification.js:51
+msgid "Please enter the verification code."
+msgstr ""
