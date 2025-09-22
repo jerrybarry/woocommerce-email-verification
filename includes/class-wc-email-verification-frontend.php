@@ -64,13 +64,13 @@ class WC_Email_Verification_Frontend {
             $(document).on('input keyup change blur paste', '#billing_email', function() {
                 var email = $(this).val().trim();
                 if (email && email.includes('@') && email.includes('.')) {
-                    $('#wc-email-verification-wrapper').show();
+                    $('#wc-email-verification-wrapper').addClass('show');
                     $('#wc-email-verification-trigger').show();
                     
                     // Check if email is already verified
                     checkEmailVerificationStatus(email);
                 } else {
-                    $('#wc-email-verification-wrapper').hide();
+                    $('#wc-email-verification-wrapper').removeClass('show');
                 }
             });
             
@@ -90,7 +90,7 @@ class WC_Email_Verification_Frontend {
                 success: function(response) {
                     if (response.success && response.data.verified) {
                         // Email is already verified, show success state
-                        jQuery('#wc-email-verification-wrapper').show();
+                        jQuery('#wc-email-verification-wrapper').addClass('show');
                         jQuery('#wc-email-verification-trigger').hide();
                         jQuery('#wc-email-verification-code-section').hide();
                         jQuery('#wc-email-verification-success').show();
@@ -135,10 +135,10 @@ class WC_Email_Verification_Frontend {
             $(document).on('input keyup change blur paste', '#reg_email', function() {
                 var email = $(this).val().trim();
                 if (email && email.includes('@') && email.includes('.')) {
-                    $('#wc-email-verification-wrapper').show();
+                    $('#wc-email-verification-wrapper').addClass('show');
                     $('#wc-email-verification-trigger').show();
                 } else {
-                    $('#wc-email-verification-wrapper').hide();
+                    $('#wc-email-verification-wrapper').removeClass('show');
                 }
             });
             
@@ -165,7 +165,7 @@ class WC_Email_Verification_Frontend {
                 success: function(response) {
                     if (response.success && response.data.verified) {
                         // Email is already verified, show success state
-                        jQuery('#wc-email-verification-wrapper').show();
+                        jQuery('#wc-email-verification-wrapper').addClass('show');
                         jQuery('#wc-email-verification-trigger').hide();
                         jQuery('#wc-email-verification-code-section').hide();
                         jQuery('#wc-email-verification-success').show();

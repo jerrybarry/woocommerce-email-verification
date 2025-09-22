@@ -150,10 +150,10 @@
             var isValidEmail = this.isValidEmail(email);
             
             if (isValidEmail) {
-                $('#wc-email-verification-wrapper').show();
+                $('#wc-email-verification-wrapper').addClass('show');
                 $('#wc-email-verification-trigger').show();
             } else {
-                $('#wc-email-verification-wrapper').hide();
+                $('#wc-email-verification-wrapper').removeClass('show');
                 $('#wc-email-verification-trigger').hide();
                 $('#wc-email-verification-code-section').hide();
                 this.clearMessages();
@@ -405,6 +405,7 @@
                     if (response.success && response.data.verified) {
                         // Email is already verified
                         self.state.emailVerified = true;
+                        $('#wc-email-verification-wrapper').addClass('show');
                         self.showSuccessState();
                     }
                 },
