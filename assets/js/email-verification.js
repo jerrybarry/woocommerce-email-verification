@@ -149,10 +149,14 @@
             var email = this.getCurrentEmail();
             var isValidEmail = this.isValidEmail(email);
             
+            console.log('Toggle verification button - Email:', email, 'Valid:', isValidEmail);
+            
             if (isValidEmail) {
+                console.log('Showing verification wrapper');
                 $('#wc-email-verification-wrapper').addClass('show');
                 $('#wc-email-verification-trigger').show();
             } else {
+                console.log('Hiding verification wrapper');
                 $('#wc-email-verification-wrapper').removeClass('show');
                 $('#wc-email-verification-trigger').hide();
                 $('#wc-email-verification-code-section').hide();
