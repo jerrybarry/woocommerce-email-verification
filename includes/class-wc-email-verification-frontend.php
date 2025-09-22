@@ -60,20 +60,14 @@ class WC_Email_Verification_Frontend {
             // Monitor email field
             $(document).on('input keyup change blur paste', '#billing_email', function() {
                 var email = $(this).val().trim();
-                console.log('Checkout email field changed:', email);
-                console.log('Verification wrapper exists:', $('#wc-email-verification-wrapper').length);
-                console.log('Current classes:', $('#wc-email-verification-wrapper').attr('class'));
                 
                 if (email && email.includes('@') && email.includes('.')) {
-                    console.log('Showing checkout verification wrapper');
                     $('#wc-email-verification-wrapper').addClass('show');
                     $('#wc-email-verification-trigger').show();
-                    console.log('After adding show class:', $('#wc-email-verification-wrapper').attr('class'));
                     
                     // Check if email is already verified
                     checkEmailVerificationStatus(email);
                 } else {
-                    console.log('Hiding checkout verification wrapper');
                     $('#wc-email-verification-wrapper').removeClass('show');
                 }
             });
@@ -135,17 +129,11 @@ class WC_Email_Verification_Frontend {
             // Monitor email field
             $(document).on('input keyup change blur paste', '#reg_email', function() {
                 var email = $(this).val().trim();
-                console.log('Registration email field changed:', email);
-                console.log('Verification wrapper exists:', $('#wc-email-verification-wrapper').length);
-                console.log('Current classes:', $('#wc-email-verification-wrapper').attr('class'));
                 
                 if (email && email.includes('@') && email.includes('.')) {
-                    console.log('Showing registration verification wrapper');
                     $('#wc-email-verification-wrapper').addClass('show');
                     $('#wc-email-verification-trigger').show();
-                    console.log('After adding show class:', $('#wc-email-verification-wrapper').attr('class'));
                 } else {
-                    console.log('Hiding registration verification wrapper');
                     $('#wc-email-verification-wrapper').removeClass('show');
                 }
             });

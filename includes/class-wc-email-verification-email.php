@@ -129,27 +129,27 @@ class WC_Email_Verification_Email {
     private function get_fallback_template() {
         return '<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff;">
     <div style="background: #0073aa; color: white; padding: 20px; text-align: center;">
-        <h1 style="margin: 0; font-size: 24px;">Email Verification</h1>
+        <h1 style="margin: 0; font-size: 24px;">' . __('Email Verification', 'wc-email-verification') . '</h1>
     </div>
     <div style="padding: 30px 20px;">
-        <h2 style="color: #333; margin-bottom: 20px;">Verify Your Email Address</h2>
-        <p style="color: #666; font-size: 16px; line-height: 1.6;">Thank you for registering with {site_name}. To complete your registration, please verify your email address using the code below:</p>
+        <h2 style="color: #333; margin-bottom: 20px;">' . __('Verify Your Email Address', 'wc-email-verification') . '</h2>
+        <p style="color: #666; font-size: 16px; line-height: 1.6;">' . sprintf(__('Thank you for registering with %s. To complete your registration, please verify your email address using the code below:', 'wc-email-verification'), '{site_name}') . '</p>
         
         <div style="background: #f8f9fa; border: 2px solid #0073aa; border-radius: 8px; padding: 20px; text-align: center; margin: 30px 0;">
-            <p style="margin: 0 0 10px 0; color: #333; font-size: 18px; font-weight: bold;">Your Verification Code:</p>
+            <p style="margin: 0 0 10px 0; color: #333; font-size: 18px; font-weight: bold;">' . __('Your Verification Code:', 'wc-email-verification') . '</p>
             <div style="background: #0073aa; color: white; font-size: 32px; font-weight: bold; padding: 15px; border-radius: 4px; letter-spacing: 3px; margin: 10px 0;">{verification_code}</div>
         </div>
         
-        <p style="color: #666; font-size: 14px; margin: 20px 0;">This code will expire in <strong>{expiry_time} minutes</strong>.</p>
+        <p style="color: #666; font-size: 14px; margin: 20px 0;">' . sprintf(__('This code will expire in %s minutes.', 'wc-email-verification'), '<strong>{expiry_time}</strong>') . '</p>
         
         <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 4px; padding: 15px; margin: 20px 0;">
-            <p style="margin: 0; color: #856404; font-size: 14px;"><strong>Security Notice:</strong> If you didn\'t request this verification code, please ignore this email. Your account security is important to us.</p>
+            <p style="margin: 0; color: #856404; font-size: 14px;"><strong>' . __('Security Notice:', 'wc-email-verification') . '</strong> ' . __('If you didn\'t request this verification code, please ignore this email. Your account security is important to us.', 'wc-email-verification') . '</p>
         </div>
         
-        <p style="color: #666; font-size: 14px; margin: 30px 0 0 0;">Best regards,<br>The {site_name} Team</p>
+        <p style="color: #666; font-size: 14px; margin: 30px 0 0 0;">' . sprintf(__('Best regards,<br>The %s Team', 'wc-email-verification'), '{site_name}') . '</p>
     </div>
     <div style="background: #f8f9fa; padding: 20px; text-align: center; border-top: 1px solid #e9ecef;">
-        <p style="margin: 0; color: #6c757d; font-size: 12px;">This email was sent from {site_name} | <a href="{site_url}" style="color: #0073aa;">Visit our website</a></p>
+        <p style="margin: 0; color: #6c757d; font-size: 12px;">' . sprintf(__('This email was sent from %s | %s', 'wc-email-verification'), '{site_name}', '<a href="{site_url}" style="color: #0073aa;">' . __('Visit our website', 'wc-email-verification') . '</a>') . '</p>
     </div>
 </div>';
     }
