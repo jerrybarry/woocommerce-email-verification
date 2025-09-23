@@ -25,6 +25,27 @@
                 self.sendTestEmail();
             });
             
+            // Email template functionality
+            $('#preview-email-template').on('click', function(e) {
+                e.preventDefault();
+                self.previewEmailTemplate();
+            });
+            
+            $('#reset-email-template').on('click', function(e) {
+                e.preventDefault();
+                self.resetEmailTemplate();
+            });
+            
+            $('#generate-email-template').on('click', function(e) {
+                e.preventDefault();
+                self.generateEmailTemplate();
+            });
+            
+            // Color picker change handlers
+            $('input[type="color"]').on('change', function() {
+                self.updateTemplatePreview();
+            });
+            
             // Form validation
             $('form').on('submit', function() {
                 return self.validateForm();
@@ -207,6 +228,115 @@
         // Initialize dependent settings visibility
         initDependentSettings: function() {
             this.toggleDependentSettings();
+        },
+        
+        // Preview email template
+        previewEmailTemplate: function() {
+            var self = this;
+            var $preview = $('#email-template-preview');
+            var template = $('textarea[name*="email_template"]').val();
+            
+            if (!template) {
+                self.showMessage('Please enter an email template first', 'error', $preview);
+                return;
+            }
+            
+            // Replace placeholders with sample data
+            var previewTemplate = template
+                .replace(/\{verification_code\}/g, '123456')
+                .replace(/\{expiry_time\}/g, '10')
+                .replace(/\{site_name\}/g, 'Your Site')
+                .replace(/\{site_url\}/g, window.location.origin)
+                .replace(/\{header_title\}/g, $('input[name*="email_header_title"]').val() || 'Email Verification')
+                .replace(/\{main_heading\}/g, $('input[name*="email_main_heading"]').val() || 'Verify Your Email Address')
+                .replace(/\{intro_text\}/g, $('textarea[name*="email_intro_text"]').val() || 'Thank you for registering with Your Site.')
+                .replace(/\{code_label\}/g, $('input[name*="email_code_label"]').val() || 'Your Verification Code:')
+                .replace(/\{security_notice\}/g, $('textarea[name*="email_security_notice"]').val() || 'Security notice text')
+                .replace(/\{footer_text\}/g, $('textarea[name*="email_footer_text"]').val() || 'Best regards, The Your Site Team');
+            
+            $preview.html('<h4>Email Preview:</h4><div style="border: 1px solid #ddd; padding: 20px; background: white;">' + previewTemplate + '</div>').show();
+        },
+        
+        // Reset email template to default
+        resetEmailTemplate: function() {
+            var self = this;
+            
+            if (confirm('Are you sure you want to reset the email template to default? This will overwrite your current template.')) {
+                $.ajax({
+                    url: ajaxurl,
+                    type: 'POST',
+                    data: {
+                        action: 'wc_get_default_email_template',
+                        nonce: $('#_wpnonce').val() || ''
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            $('textarea[name*="email_template"]').val(response.data.template);
+                            self.showMessage('Email template reset to default', 'success', $('#email-template-preview'));
+                        }
+                    }
+                });
+            }
+        },
+        
+        // Generate email template from settings
+        generateEmailTemplate: function() {
+            var self = this;
+            var settings = {
+                primary_color: $('input[name*="email_primary_color"]').val() || '#0073aa',
+                secondary_color: $('input[name*="email_secondary_color"]').val() || '#005a87',
+                text_color: $('input[name*="email_text_color"]').val() || '#333333',
+                background_color: $('input[name*="email_background_color"]').val() || '#f8f9fa',
+                header_title: $('input[name*="email_header_title"]').val() || 'Email Verification',
+                main_heading: $('input[name*="email_main_heading"]').val() || 'Verify Your Email Address',
+                intro_text: $('textarea[name*="email_intro_text"]').val() || 'Thank you for registering with {site_name}.',
+                code_label: $('input[name*="email_code_label"]').val() || 'Your Verification Code:',
+                expiry_text: $('input[name*="email_expiry_text"]').val() || 'This code will expire in {expiry_time} minutes.',
+                security_notice: $('textarea[name*="email_security_notice"]').val() || 'Security notice text',
+                footer_text: $('textarea[name*="email_footer_text"]').val() || 'Best regards, The {site_name} Team'
+            };
+            
+            var template = this.buildEmailTemplate(settings);
+            $('textarea[name*="email_template"]').val(template);
+            
+            self.showMessage('Email template generated from your settings', 'success', $('#email-template-preview'));
+        },
+        
+        // Build email template from settings
+        buildEmailTemplate: function(settings) {
+            return '<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: ' + settings.background_color + ';">
+    <div style="background: linear-gradient(135deg, ' + settings.primary_color + ' 0%, ' + settings.secondary_color + ' 100%); color: white; padding: 20px; text-align: center;">
+        <h1 style="margin: 0; font-size: 24px;">' + settings.header_title + '</h1>
+    </div>
+    <div style="padding: 30px 20px; background: #ffffff;">
+        <h2 style="color: ' + settings.text_color + '; margin-bottom: 20px;">' + settings.main_heading + '</h2>
+        <p style="color: #666; font-size: 16px; line-height: 1.6;">' + settings.intro_text + '</p>
+        
+        <div style="background: #f8f9fa; border: 2px solid ' + settings.primary_color + '; border-radius: 8px; padding: 20px; text-align: center; margin: 30px 0;">
+            <p style="margin: 0 0 10px 0; color: ' + settings.text_color + '; font-size: 18px; font-weight: bold;">' + settings.code_label + '</p>
+            <div style="background: ' + settings.primary_color + '; color: white; font-size: 32px; font-weight: bold; padding: 15px; border-radius: 4px; letter-spacing: 3px; margin: 10px 0;">{verification_code}</div>
+        </div>
+        
+        <p style="color: #666; font-size: 14px; margin: 20px 0;">' + settings.expiry_text + '</p>
+        
+        <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 4px; padding: 15px; margin: 20px 0;">
+            <p style="margin: 0; color: #856404; font-size: 14px;"><strong>Security Notice:</strong> ' + settings.security_notice + '</p>
+        </div>
+        
+        <p style="color: #666; font-size: 14px; margin: 30px 0 0 0;">' + settings.footer_text + '</p>
+    </div>
+    <div style="background: #f8f9fa; padding: 20px; text-align: center; border-top: 1px solid #e9ecef;">
+        <p style="margin: 0; color: #6c757d; font-size: 12px;">This email was sent from {site_name} | <a href="{site_url}" style="color: ' + settings.primary_color + ';">Visit our website</a></p>
+    </div>
+</div>';
+        },
+        
+        // Update template preview when colors change
+        updateTemplatePreview: function() {
+            var $preview = $('#email-template-preview');
+            if ($preview.is(':visible')) {
+                this.previewEmailTemplate();
+            }
         }
     };
 

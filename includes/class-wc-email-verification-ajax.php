@@ -40,6 +40,9 @@ class WC_Email_Verification_Ajax {
         // Check email verification status
         add_action('wp_ajax_wc_check_email_verification_status', array($this, 'check_email_verification_status'));
         add_action('wp_ajax_nopriv_wc_check_email_verification_status', array($this, 'check_email_verification_status'));
+        
+        // Get default email template
+        add_action('wp_ajax_wc_get_default_email_template', array($this, 'get_default_email_template'));
     }
     
     /**
@@ -390,6 +393,25 @@ class WC_Email_Verification_Ajax {
         }
         
         return isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '0.0.0.0';
+    }
+    
+    /**
+     * Get default email template
+     */
+    public function get_default_email_template() {
+        // Check if user is admin
+        if (!current_user_can('manage_woocommerce')) {
+            wp_send_json_error(array('message' => __('Permission denied.', 'wc-email-verification')));
+        }
+        
+        // Verify nonce
+        if (!wp_verify_nonce($_POST['nonce'], 'wc_email_verification_test')) {
+            wp_send_json_error(array('message' => __('Security check failed.', 'wc-email-verification')));
+        }
+        
+        $default_template = WC_Email_Verification::get_instance()->get_default_email_template();
+        
+        wp_send_json_success(array('template' => $default_template));
     }
     
     /**

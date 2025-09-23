@@ -170,6 +170,10 @@ class WC_Email_Verification_Admin {
                     </div>
                     
                     <div id="email" class="tab-content">
+                        <h3><?php _e('Email Customization', 'wc-email-verification'); ?></h3>
+                        <p class="description"><?php _e('Customize your email verification template with colors, content, and styling.', 'wc-email-verification'); ?></p>
+                        
+                        <h4><?php _e('Basic Settings', 'wc-email-verification'); ?></h4>
                         <table class="form-table">
                             <tr>
                                 <th scope="row"><?php _e('From Name', 'wc-email-verification'); ?></th>
@@ -186,28 +190,119 @@ class WC_Email_Verification_Admin {
                             <tr>
                                 <th scope="row"><?php _e('Email Subject', 'wc-email-verification'); ?></th>
                                 <td>
-                                    <input type="text" name="wc_email_verification_settings[email_subject]" value="<?php echo esc_attr($settings['email_subject'] ?? __('Your Verification Code - {site_name}', 'wc-email-verification')); ?>" class="large-text" />
+                                    <input type="text" name="wc_email_verification_settings[email_subject]" value="<?php echo esc_attr($settings['email_subject'] ?? 'Your Verification Code - {site_name}'); ?>" class="large-text" />
+                                    <p class="description"><?php _e('Available placeholders: {site_name}', 'wc-email-verification'); ?></p>
+                                </td>
+                            </tr>
+                        </table>
+                        
+                        <h4><?php _e('Email Colors', 'wc-email-verification'); ?></h4>
+                        <table class="form-table">
+                            <tr>
+                                <th scope="row"><?php _e('Primary Color', 'wc-email-verification'); ?></th>
+                                <td>
+                                    <input type="color" name="wc_email_verification_settings[email_primary_color]" value="<?php echo esc_attr($settings['email_primary_color'] ?? '#0073aa'); ?>" />
+                                    <p class="description"><?php _e('Header background, buttons, and verification code background', 'wc-email-verification'); ?></p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row"><?php _e('Secondary Color', 'wc-email-verification'); ?></th>
+                                <td>
+                                    <input type="color" name="wc_email_verification_settings[email_secondary_color]" value="<?php echo esc_attr($settings['email_secondary_color'] ?? '#005a87'); ?>" />
+                                    <p class="description"><?php _e('Header gradient and hover effects', 'wc-email-verification'); ?></p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row"><?php _e('Text Color', 'wc-email-verification'); ?></th>
+                                <td>
+                                    <input type="color" name="wc_email_verification_settings[email_text_color]" value="<?php echo esc_attr($settings['email_text_color'] ?? '#333333'); ?>" />
+                                    <p class="description"><?php _e('Main text color', 'wc-email-verification'); ?></p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row"><?php _e('Background Color', 'wc-email-verification'); ?></th>
+                                <td>
+                                    <input type="color" name="wc_email_verification_settings[email_background_color]" value="<?php echo esc_attr($settings['email_background_color'] ?? '#f8f9fa'); ?>" />
+                                    <p class="description"><?php _e('Email background color', 'wc-email-verification'); ?></p>
+                                </td>
+                            </tr>
+                        </table>
+                        
+                        <h4><?php _e('Email Content', 'wc-email-verification'); ?></h4>
+                        <table class="form-table">
+                            <tr>
+                                <th scope="row"><?php _e('Header Title', 'wc-email-verification'); ?></th>
+                                <td>
+                                    <input type="text" name="wc_email_verification_settings[email_header_title]" value="<?php echo esc_attr($settings['email_header_title'] ?? 'Email Verification'); ?>" class="regular-text" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row"><?php _e('Main Heading', 'wc-email-verification'); ?></th>
+                                <td>
+                                    <input type="text" name="wc_email_verification_settings[email_main_heading]" value="<?php echo esc_attr($settings['email_main_heading'] ?? 'Verify Your Email Address'); ?>" class="regular-text" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row"><?php _e('Intro Text', 'wc-email-verification'); ?></th>
+                                <td>
+                                    <textarea name="wc_email_verification_settings[email_intro_text]" rows="3" cols="50" class="large-text"><?php echo esc_textarea($settings['email_intro_text'] ?? 'Thank you for registering with {site_name}. To complete your registration, please verify your email address using the code below:'); ?></textarea>
                                     <p class="description"><?php _e('Available placeholders: {site_name}', 'wc-email-verification'); ?></p>
                                 </td>
                             </tr>
                             <tr>
-                                <th scope="row"><?php _e('Email Template', 'wc-email-verification'); ?></th>
+                                <th scope="row"><?php _e('Verification Code Label', 'wc-email-verification'); ?></th>
                                 <td>
-                                    <textarea name="wc_email_verification_settings[email_template]" rows="15" cols="50" class="large-text"><?php echo esc_textarea($settings['email_template'] ?? $this->get_default_email_template()); ?></textarea>
-                                    <p class="description"><?php _e('Available placeholders: {verification_code}, {expiry_time}, {site_name}, {site_url}', 'wc-email-verification'); ?></p>
+                                    <input type="text" name="wc_email_verification_settings[email_code_label]" value="<?php echo esc_attr($settings['email_code_label'] ?? 'Your Verification Code:'); ?>" class="regular-text" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row"><?php _e('Expiry Text', 'wc-email-verification'); ?></th>
+                                <td>
+                                    <input type="text" name="wc_email_verification_settings[email_expiry_text]" value="<?php echo esc_attr($settings['email_expiry_text'] ?? 'This code will expire in {expiry_time} minutes.'); ?>" class="regular-text" />
+                                    <p class="description"><?php _e('Available placeholders: {expiry_time}', 'wc-email-verification'); ?></p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row"><?php _e('Security Notice', 'wc-email-verification'); ?></th>
+                                <td>
+                                    <textarea name="wc_email_verification_settings[email_security_notice]" rows="3" cols="50" class="large-text"><?php echo esc_textarea($settings['email_security_notice'] ?? 'If you didn\'t request this verification code, please ignore this email. Your account security is important to us.'); ?></textarea>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row"><?php _e('Footer Text', 'wc-email-verification'); ?></th>
+                                <td>
+                                    <textarea name="wc_email_verification_settings[email_footer_text]" rows="2" cols="50" class="large-text"><?php echo esc_textarea($settings['email_footer_text'] ?? 'Best regards,<br>The {site_name} Team'); ?></textarea>
+                                    <p class="description"><?php _e('Available placeholders: {site_name}', 'wc-email-verification'); ?></p>
+                                </td>
+                            </tr>
+                        </table>
+                        
+                        <h4><?php _e('Advanced Template', 'wc-email-verification'); ?></h4>
+                        <table class="form-table">
+                            <tr>
+                                <th scope="row"><?php _e('Custom HTML Template', 'wc-email-verification'); ?></th>
+                                <td>
+                                    <textarea name="wc_email_verification_settings[email_template]" rows="20" cols="50" class="large-text"><?php echo esc_textarea($settings['email_template'] ?? $this->get_default_email_template()); ?></textarea>
+                                    <p class="description"><?php _e('Available placeholders: {verification_code}, {expiry_time}, {site_name}, {site_url}, {header_title}, {main_heading}, {intro_text}, {code_label}, {security_notice}, {footer_text}', 'wc-email-verification'); ?></p>
                                     <div style="margin-top: 10px;">
                                         <button type="button" id="preview-email-template" class="button"><?php _e('Preview Template', 'wc-email-verification'); ?></button>
                                         <button type="button" id="reset-email-template" class="button"><?php _e('Reset to Default', 'wc-email-verification'); ?></button>
+                                        <button type="button" id="generate-email-template" class="button button-primary"><?php _e('Generate from Settings Above', 'wc-email-verification'); ?></button>
                                     </div>
                                     <div id="email-template-preview" style="margin-top: 15px; padding: 15px; border: 1px solid #ddd; background: #f9f9f9; display: none;"></div>
                                 </td>
                             </tr>
+                        </table>
+                        
+                        <h4><?php _e('Test Email', 'wc-email-verification'); ?></h4>
+                        <table class="form-table">
                             <tr>
-                                <th scope="row"><?php _e('Test Email', 'wc-email-verification'); ?></th>
+                                <th scope="row"><?php _e('Send Test Email', 'wc-email-verification'); ?></th>
                                 <td>
-                                    <input type="email" id="test-email" placeholder="<?php _e('Enter email address', 'wc-email-verification'); ?>" />
+                                    <input type="email" id="test-email" placeholder="<?php _e('Enter email address', 'wc-email-verification'); ?>" class="regular-text" />
                                     <button type="button" id="send-test-email" class="button"><?php _e('Send Test Email', 'wc-email-verification'); ?></button>
                                     <div id="test-email-result"></div>
+                                    <p class="description"><?php _e('Send a test email with verification code to preview your template', 'wc-email-verification'); ?></p>
                                 </td>
                             </tr>
                         </table>
@@ -414,29 +509,29 @@ class WC_Email_Verification_Admin {
      * @return string
      */
     private function get_default_email_template() {
-        return '<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff;">
-    <div style="background: #0073aa; color: white; padding: 20px; text-align: center;">
-        <h1 style="margin: 0; font-size: 24px;">' . __('Email Verification', 'wc-email-verification') . '</h1>
+        return '<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: {background_color};">
+    <div style="background: linear-gradient(135deg, {primary_color} 0%, {secondary_color} 100%); color: white; padding: 20px; text-align: center;">
+        <h1 style="margin: 0; font-size: 24px;">{header_title}</h1>
     </div>
-    <div style="padding: 30px 20px;">
-        <h2 style="color: #333; margin-bottom: 20px;">' . __('Verify Your Email Address', 'wc-email-verification') . '</h2>
-        <p style="color: #666; font-size: 16px; line-height: 1.6;">' . sprintf(__('Thank you for registering with %s. To complete your registration, please verify your email address using the code below:', 'wc-email-verification'), '{site_name}') . '</p>
+    <div style="padding: 30px 20px; background: #ffffff;">
+        <h2 style="color: {text_color}; margin-bottom: 20px;">{main_heading}</h2>
+        <p style="color: #666; font-size: 16px; line-height: 1.6;">{intro_text}</p>
         
-        <div style="background: #f8f9fa; border: 2px solid #0073aa; border-radius: 8px; padding: 20px; text-align: center; margin: 30px 0;">
-            <p style="margin: 0 0 10px 0; color: #333; font-size: 18px; font-weight: bold;">' . __('Your Verification Code:', 'wc-email-verification') . '</p>
-            <div style="background: #0073aa; color: white; font-size: 32px; font-weight: bold; padding: 15px; border-radius: 4px; letter-spacing: 3px; margin: 10px 0;">{verification_code}</div>
+        <div style="background: #f8f9fa; border: 2px solid {primary_color}; border-radius: 8px; padding: 20px; text-align: center; margin: 30px 0;">
+            <p style="margin: 0 0 10px 0; color: {text_color}; font-size: 18px; font-weight: bold;">{code_label}</p>
+            <div style="background: {primary_color}; color: white; font-size: 32px; font-weight: bold; padding: 15px; border-radius: 4px; letter-spacing: 3px; margin: 10px 0;">{verification_code}</div>
         </div>
         
-        <p style="color: #666; font-size: 14px; margin: 20px 0;">' . sprintf(__('This code will expire in %s minutes.', 'wc-email-verification'), '<strong>{expiry_time}</strong>') . '</p>
+        <p style="color: #666; font-size: 14px; margin: 20px 0;">{expiry_text}</p>
         
         <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 4px; padding: 15px; margin: 20px 0;">
-            <p style="margin: 0; color: #856404; font-size: 14px;"><strong>' . __('Security Notice:', 'wc-email-verification') . '</strong> ' . __('If you didn\'t request this verification code, please ignore this email. Your account security is important to us.', 'wc-email-verification') . '</p>
+            <p style="margin: 0; color: #856404; font-size: 14px;"><strong>Security Notice:</strong> {security_notice}</p>
         </div>
         
-        <p style="color: #666; font-size: 14px; margin: 30px 0 0 0;">' . sprintf(__('Best regards,<br>The %s Team', 'wc-email-verification'), '{site_name}') . '</p>
+        <p style="color: #666; font-size: 14px; margin: 30px 0 0 0;">{footer_text}</p>
     </div>
     <div style="background: #f8f9fa; padding: 20px; text-align: center; border-top: 1px solid #e9ecef;">
-        <p style="margin: 0; color: #6c757d; font-size: 12px;">' . sprintf(__('This email was sent from %s | %s', 'wc-email-verification'), '{site_name}', '<a href="{site_url}" style="color: #0073aa;">' . __('Visit our website', 'wc-email-verification') . '</a>') . '</p>
+        <p style="margin: 0; color: #6c757d; font-size: 12px;">This email was sent from {site_name} | <a href="{site_url}" style="color: {primary_color};">Visit our website</a></p>
     </div>
 </div>';
     }

@@ -99,14 +99,60 @@ class WC_Email_Verification_Email {
      * @return string
      */
     private function get_email_content($verification_code, $expiry_minutes) {
-        $template = $this->get_default_email_template();
+        $settings = WC_Email_Verification::get_instance()->get_settings();
+        $template = $settings['email_template'] ?? $this->get_fallback_template();
         
-        // Replace placeholders
+        // Get customizable content settings
+        $header_title = $settings['email_header_title'] ?? 'Email Verification';
+        $main_heading = $settings['email_main_heading'] ?? 'Verify Your Email Address';
+        $intro_text = $settings['email_intro_text'] ?? 'Thank you for registering with {site_name}. To complete your registration, please verify your email address using the code below:';
+        $code_label = $settings['email_code_label'] ?? 'Your Verification Code:';
+        $expiry_text = $settings['email_expiry_text'] ?? 'This code will expire in {expiry_time} minutes.';
+        $security_notice = $settings['email_security_notice'] ?? 'If you didn\'t request this verification code, please ignore this email. Your account security is important to us.';
+        $footer_text = $settings['email_footer_text'] ?? 'Best regards,<br>The {site_name} Team';
+        
+        // Replace all placeholders
         $content = str_replace(
-            array('{verification_code}', '{expiry_time}', '{site_name}', '{site_url}'),
-            array($verification_code, $expiry_minutes, get_bloginfo('name'), home_url()),
+            array(
+                '{verification_code}', 
+                '{expiry_time}', 
+                '{site_name}', 
+                '{site_url}',
+                '{header_title}',
+                '{main_heading}',
+                '{intro_text}',
+                '{code_label}',
+                '{security_notice}',
+                '{footer_text}'
+            ),
+            array(
+                $verification_code, 
+                $expiry_minutes, 
+                get_bloginfo('name'), 
+                home_url(),
+                $header_title,
+                $main_heading,
+                $intro_text,
+                $code_label,
+                $security_notice,
+                $footer_text
+            ),
             $template
         );
+        
+        // Apply custom colors if template doesn't have them
+        if (strpos($content, '{primary_color}') !== false || strpos($content, '{secondary_color}') !== false) {
+            $primary_color = $settings['email_primary_color'] ?? '#0073aa';
+            $secondary_color = $settings['email_secondary_color'] ?? '#005a87';
+            $text_color = $settings['email_text_color'] ?? '#333333';
+            $background_color = $settings['email_background_color'] ?? '#f8f9fa';
+            
+            $content = str_replace(
+                array('{primary_color}', '{secondary_color}', '{text_color}', '{background_color}'),
+                array($primary_color, $secondary_color, $text_color, $background_color),
+                $content
+            );
+        }
         
         return $content;
     }

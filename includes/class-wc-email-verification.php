@@ -326,4 +326,37 @@ class WC_Email_Verification {
         $updated_settings = array_merge($default_settings, $current_settings);
         update_option('wc_email_verification_settings', $updated_settings);
     }
+    
+    /**
+     * Get default email template
+     *
+     * @return string
+     */
+    public function get_default_email_template() {
+        return '<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: {background_color};">
+    <div style="background: linear-gradient(135deg, {primary_color} 0%, {secondary_color} 100%); color: white; padding: 20px; text-align: center;">
+        <h1 style="margin: 0; font-size: 24px;">{header_title}</h1>
+    </div>
+    <div style="padding: 30px 20px; background: #ffffff;">
+        <h2 style="color: {text_color}; margin-bottom: 20px;">{main_heading}</h2>
+        <p style="color: #666; font-size: 16px; line-height: 1.6;">{intro_text}</p>
+        
+        <div style="background: #f8f9fa; border: 2px solid {primary_color}; border-radius: 8px; padding: 20px; text-align: center; margin: 30px 0;">
+            <p style="margin: 0 0 10px 0; color: {text_color}; font-size: 18px; font-weight: bold;">{code_label}</p>
+            <div style="background: {primary_color}; color: white; font-size: 32px; font-weight: bold; padding: 15px; border-radius: 4px; letter-spacing: 3px; margin: 10px 0;">{verification_code}</div>
+        </div>
+        
+        <p style="color: #666; font-size: 14px; margin: 20px 0;">{expiry_text}</p>
+        
+        <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 4px; padding: 15px; margin: 20px 0;">
+            <p style="margin: 0; color: #856404; font-size: 14px;"><strong>Security Notice:</strong> {security_notice}</p>
+        </div>
+        
+        <p style="color: #666; font-size: 14px; margin: 30px 0 0 0;">{footer_text}</p>
+    </div>
+    <div style="background: #f8f9fa; padding: 20px; text-align: center; border-top: 1px solid #e9ecef;">
+        <p style="margin: 0; color: #6c757d; font-size: 12px;">This email was sent from {site_name} | <a href="{site_url}" style="color: {primary_color};">Visit our website</a></p>
+    </div>
+</div>';
+    }
 }
