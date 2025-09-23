@@ -195,7 +195,7 @@ class WC_Email_Verification_Frontend {
         <div id="wc-email-verification-wrapper" class="wc-email-verification-wrapper" data-context="<?php echo esc_attr($context); ?>">
             <div id="wc-email-verification-trigger" class="wc-email-verification-trigger" style="display: none;">
                 <div class="wc-email-verification-header">
-                    <h3><?php _e('Email Verification', 'wc-email-verification'); ?></h3>
+                    <h3><?php echo wc_email_verification_translate('Email Verification'); ?></h3>
                     <p><?php _e('Verify your email address to proceed', 'wc-email-verification'); ?></p>
                 </div>
                 <button type="button" id="wc-send-verification-btn" class="button wc-email-verification-btn"><?php _e('Send Verification Code', 'wc-email-verification'); ?></button>

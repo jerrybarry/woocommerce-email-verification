@@ -49,6 +49,9 @@ class WC_Email_Verification {
      * Initialize hooks
      */
     private function init_hooks() {
+        // Load text domain early
+        add_action('plugins_loaded', array($this, 'load_textdomain'), 1);
+        
         add_action('init', array($this, 'init'));
         add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'));
         add_action('admin_enqueue_scripts', array($this, 'admin_enqueue_scripts'));
@@ -61,12 +64,16 @@ class WC_Email_Verification {
     }
     
     /**
+     * Load text domain
+     */
+    public function load_textdomain() {
+        load_plugin_textdomain('wc-email-verification', false, dirname(plugin_basename(WC_EMAIL_VERIFICATION_PLUGIN_FILE)) . '/languages');
+    }
+    
+    /**
      * Initialize plugin
      */
     public function init() {
-        // Load text domain
-        load_plugin_textdomain('wc-email-verification', false, dirname(plugin_basename(WC_EMAIL_VERIFICATION_PLUGIN_FILE)) . '/languages');
-        
         // Start session if not already started
         if (!session_id()) {
             session_start();
