@@ -43,7 +43,12 @@
             
             // Color picker change handlers
             $('input[type="color"]').on('change', function() {
-                self.updateTemplatePreview();
+                self.updateDesignerPreview();
+            });
+            
+            // Content change handlers for live preview
+            $('#email-designer input, #email-designer textarea').on('input change', function() {
+                self.updateDesignerPreview();
             });
             
             // Form validation
@@ -78,6 +83,11 @@
             // Show target content
             $('.tab-content').removeClass('active');
             $(target).addClass('active');
+            
+            // Show live preview if we're on the email designer tab
+            if (target === '#email-designer') {
+                this.updateDesignerPreview();
+            }
         },
         
         // Send test email
@@ -234,7 +244,14 @@
         previewEmailTemplate: function() {
             var self = this;
             var $preview = $('#email-template-preview');
-            var template = $('textarea[name*="email_template"]').val();
+            
+            // Get content from WYSIWYG editor or textarea
+            var template = '';
+            if (typeof tinymce !== 'undefined' && tinymce.get('wc_email_verification_template')) {
+                template = tinymce.get('wc_email_verification_template').getContent();
+            } else {
+                template = $('#wc_email_verification_template').val();
+            }
             
             if (!template) {
                 self.showMessage('Please enter an email template first', 'error', $preview);
@@ -252,7 +269,11 @@
                 .replace(/\{intro_text\}/g, $('textarea[name*="email_intro_text"]').val() || 'Thank you for registering with Your Site.')
                 .replace(/\{code_label\}/g, $('input[name*="email_code_label"]').val() || 'Your Verification Code:')
                 .replace(/\{security_notice\}/g, $('textarea[name*="email_security_notice"]').val() || 'Security notice text')
-                .replace(/\{footer_text\}/g, $('textarea[name*="email_footer_text"]').val() || 'Best regards, The Your Site Team');
+                .replace(/\{footer_text\}/g, $('textarea[name*="email_footer_text"]').val() || 'Best regards, The Your Site Team')
+                .replace(/\{primary_color\}/g, $('input[name*="email_primary_color"]').val() || '#0073aa')
+                .replace(/\{secondary_color\}/g, $('input[name*="email_secondary_color"]').val() || '#005a87')
+                .replace(/\{text_color\}/g, $('input[name*="email_text_color"]').val() || '#333333')
+                .replace(/\{background_color\}/g, $('input[name*="email_background_color"]').val() || '#f8f9fa');
             
             $preview.html('<h4>Email Preview:</h4><div style="border: 1px solid #ddd; padding: 20px; background: white;">' + previewTemplate + '</div>').show();
         },
@@ -271,7 +292,13 @@
                     },
                     success: function(response) {
                         if (response.success) {
-                            $('textarea[name*="email_template"]').val(response.data.template);
+                            // Update WYSIWYG editor if it exists
+                            if (typeof tinymce !== 'undefined' && tinymce.get('wc_email_verification_template')) {
+                                tinymce.get('wc_email_verification_template').setContent(response.data.template);
+                            } else {
+                                // Fallback to textarea
+                                $('#wc_email_verification_template').val(response.data.template);
+                            }
                             self.showMessage('Email template reset to default', 'success', $('#email-template-preview'));
                         }
                     }
@@ -297,9 +324,16 @@
             };
             
             var template = this.buildEmailTemplate(settings);
-            $('textarea[name*="email_template"]').val(template);
             
-            self.showMessage('Email template generated from your settings', 'success', $('#email-template-preview'));
+            // Update WYSIWYG editor if it exists
+            if (typeof tinymce !== 'undefined' && tinymce.get('wc_email_verification_template')) {
+                tinymce.get('wc_email_verification_template').setContent(template);
+            } else {
+                // Fallback to textarea
+                $('#wc_email_verification_template').val(template);
+            }
+            
+            self.showMessage('Email template generated from your settings', 'success', $('#designer-preview'));
         },
         
         // Build email template from settings
@@ -337,6 +371,44 @@
             if ($preview.is(':visible')) {
                 this.previewEmailTemplate();
             }
+        },
+        
+        // Update designer preview
+        updateDesignerPreview: function() {
+            var self = this;
+            var $preview = $('#designer-preview');
+            var $previewContent = $('#designer-preview-content');
+            
+            // Only show preview if we're on the email designer tab
+            if (!$preview.is(':visible')) {
+                return;
+            }
+            
+            var settings = {
+                primary_color: $('input[name*="email_primary_color"]').val() || '#0073aa',
+                secondary_color: $('input[name*="email_secondary_color"]').val() || '#005a87',
+                text_color: $('input[name*="email_text_color"]').val() || '#333333',
+                background_color: $('input[name*="email_background_color"]').val() || '#f8f9fa',
+                header_title: $('input[name*="email_header_title"]').val() || 'Email Verification',
+                main_heading: $('input[name*="email_main_heading"]').val() || 'Verify Your Email Address',
+                intro_text: $('textarea[name*="email_intro_text"]').val() || 'Thank you for registering with Your Site.',
+                code_label: $('input[name*="email_code_label"]').val() || 'Your Verification Code:',
+                expiry_text: $('input[name*="email_expiry_text"]').val() || 'This code will expire in 10 minutes.',
+                security_notice: $('textarea[name*="email_security_notice"]').val() || 'Security notice text',
+                footer_text: $('textarea[name*="email_footer_text"]').val() || 'Best regards, The Your Site Team'
+            };
+            
+            var previewTemplate = this.buildEmailTemplate(settings);
+            
+            // Replace placeholders with sample data
+            previewTemplate = previewTemplate
+                .replace(/\{verification_code\}/g, '123456')
+                .replace(/\{expiry_time\}/g, '10')
+                .replace(/\{site_name\}/g, 'Your Site')
+                .replace(/\{site_url\}/g, window.location.origin);
+            
+            $previewContent.html('<div style="border: 1px solid #ddd; padding: 20px; background: white;">' + previewTemplate + '</div>');
+            $preview.show();
         }
     };
 

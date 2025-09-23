@@ -116,6 +116,7 @@ class WC_Email_Verification_Admin {
                     <nav class="nav-tab-wrapper">
                         <a href="#general" class="nav-tab nav-tab-active"><?php _e('General', 'wc-email-verification'); ?></a>
                         <a href="#email" class="nav-tab"><?php _e('Email Settings', 'wc-email-verification'); ?></a>
+                        <a href="#email-designer" class="nav-tab"><?php _e('Email Designer', 'wc-email-verification'); ?></a>
                         <a href="#security" class="nav-tab"><?php _e('Security', 'wc-email-verification'); ?></a>
                         <a href="#logs" class="nav-tab"><?php _e('Logs', 'wc-email-verification'); ?></a>
                     </nav>
@@ -170,10 +171,9 @@ class WC_Email_Verification_Admin {
                     </div>
                     
                     <div id="email" class="tab-content">
-                        <h3><?php _e('Email Customization', 'wc-email-verification'); ?></h3>
-                        <p class="description"><?php _e('Customize your email verification template with colors, content, and styling.', 'wc-email-verification'); ?></p>
+                        <h3><?php _e('Basic Email Settings', 'wc-email-verification'); ?></h3>
+                        <p class="description"><?php _e('Configure basic email settings and send test emails.', 'wc-email-verification'); ?></p>
                         
-                        <h4><?php _e('Basic Settings', 'wc-email-verification'); ?></h4>
                         <table class="form-table">
                             <tr>
                                 <th scope="row"><?php _e('From Name', 'wc-email-verification'); ?></th>
@@ -195,6 +195,52 @@ class WC_Email_Verification_Admin {
                                 </td>
                             </tr>
                         </table>
+                        
+                        <h4><?php _e('Custom HTML Template', 'wc-email-verification'); ?></h4>
+                        <table class="form-table">
+                            <tr>
+                                <th scope="row"><?php _e('Email Template', 'wc-email-verification'); ?></th>
+                                <td>
+                                    <?php 
+                                    $template_content = $settings['email_template'] ?? $this->get_default_email_template();
+                                    wp_editor($template_content, 'wc_email_verification_template', array(
+                                        'textarea_name' => 'wc_email_verification_settings[email_template]',
+                                        'textarea_rows' => 15,
+                                        'media_buttons' => false,
+                                        'teeny' => false,
+                                        'tinymce' => array(
+                                            'toolbar1' => 'formatselect,bold,italic,underline,|,bullist,numlist,blockquote,|,link,unlink,|,forecolor,backcolor,|,removeformat,fullscreen',
+                                            'toolbar2' => '',
+                                        ),
+                                    ));
+                                    ?>
+                                    <p class="description"><?php _e('Available placeholders: {verification_code}, {expiry_time}, {site_name}, {site_url}, {header_title}, {main_heading}, {intro_text}, {code_label}, {security_notice}, {footer_text}, {primary_color}, {secondary_color}, {text_color}, {background_color}', 'wc-email-verification'); ?></p>
+                                    <div style="margin-top: 10px;">
+                                        <button type="button" id="preview-email-template" class="button"><?php _e('Preview Template', 'wc-email-verification'); ?></button>
+                                        <button type="button" id="reset-email-template" class="button"><?php _e('Reset to Default', 'wc-email-verification'); ?></button>
+                                    </div>
+                                    <div id="email-template-preview" style="margin-top: 15px; padding: 15px; border: 1px solid #ddd; background: #f9f9f9; display: none;"></div>
+                                </td>
+                            </tr>
+                        </table>
+                        
+                        <h4><?php _e('Test Email', 'wc-email-verification'); ?></h4>
+                        <table class="form-table">
+                            <tr>
+                                <th scope="row"><?php _e('Send Test Email', 'wc-email-verification'); ?></th>
+                                <td>
+                                    <input type="email" id="test-email" placeholder="<?php _e('Enter email address', 'wc-email-verification'); ?>" class="regular-text" />
+                                    <button type="button" id="send-test-email" class="button"><?php _e('Send Test Email', 'wc-email-verification'); ?></button>
+                                    <div id="test-email-result"></div>
+                                    <p class="description"><?php _e('Send a test email with verification code to preview your template', 'wc-email-verification'); ?></p>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    
+                    <div id="email-designer" class="tab-content">
+                        <h3><?php _e('Email Designer', 'wc-email-verification'); ?></h3>
+                        <p class="description"><?php _e('Design your email verification template with colors, content, and styling. Use the "Generate Template" button to apply these settings to your email template.', 'wc-email-verification'); ?></p>
                         
                         <h4><?php _e('Email Colors', 'wc-email-verification'); ?></h4>
                         <table class="form-table">
@@ -277,35 +323,21 @@ class WC_Email_Verification_Admin {
                             </tr>
                         </table>
                         
-                        <h4><?php _e('Advanced Template', 'wc-email-verification'); ?></h4>
+                        <h4><?php _e('Template Actions', 'wc-email-verification'); ?></h4>
                         <table class="form-table">
                             <tr>
-                                <th scope="row"><?php _e('Custom HTML Template', 'wc-email-verification'); ?></th>
+                                <th scope="row"><?php _e('Generate Template', 'wc-email-verification'); ?></th>
                                 <td>
-                                    <textarea name="wc_email_verification_settings[email_template]" rows="20" cols="50" class="large-text"><?php echo esc_textarea($settings['email_template'] ?? $this->get_default_email_template()); ?></textarea>
-                                    <p class="description"><?php _e('Available placeholders: {verification_code}, {expiry_time}, {site_name}, {site_url}, {header_title}, {main_heading}, {intro_text}, {code_label}, {security_notice}, {footer_text}', 'wc-email-verification'); ?></p>
-                                    <div style="margin-top: 10px;">
-                                        <button type="button" id="preview-email-template" class="button"><?php _e('Preview Template', 'wc-email-verification'); ?></button>
-                                        <button type="button" id="reset-email-template" class="button"><?php _e('Reset to Default', 'wc-email-verification'); ?></button>
-                                        <button type="button" id="generate-email-template" class="button button-primary"><?php _e('Generate from Settings Above', 'wc-email-verification'); ?></button>
-                                    </div>
-                                    <div id="email-template-preview" style="margin-top: 15px; padding: 15px; border: 1px solid #ddd; background: #f9f9f9; display: none;"></div>
+                                    <button type="button" id="generate-email-template" class="button button-primary"><?php _e('Generate Template from Settings Above', 'wc-email-verification'); ?></button>
+                                    <p class="description"><?php _e('This will generate a new email template using your color and content settings above. It will update the HTML template in the "Email Settings" tab.', 'wc-email-verification'); ?></p>
                                 </td>
                             </tr>
                         </table>
                         
-                        <h4><?php _e('Test Email', 'wc-email-verification'); ?></h4>
-                        <table class="form-table">
-                            <tr>
-                                <th scope="row"><?php _e('Send Test Email', 'wc-email-verification'); ?></th>
-                                <td>
-                                    <input type="email" id="test-email" placeholder="<?php _e('Enter email address', 'wc-email-verification'); ?>" class="regular-text" />
-                                    <button type="button" id="send-test-email" class="button"><?php _e('Send Test Email', 'wc-email-verification'); ?></button>
-                                    <div id="test-email-result"></div>
-                                    <p class="description"><?php _e('Send a test email with verification code to preview your template', 'wc-email-verification'); ?></p>
-                                </td>
-                            </tr>
-                        </table>
+                        <div id="designer-preview" style="margin-top: 20px; padding: 20px; border: 1px solid #ddd; background: #f9f9f9; display: none;">
+                            <h4><?php _e('Live Preview', 'wc-email-verification'); ?></h4>
+                            <div id="designer-preview-content"></div>
+                        </div>
                     </div>
                     
                     <div id="security" class="tab-content">
