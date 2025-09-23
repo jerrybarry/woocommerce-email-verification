@@ -169,10 +169,14 @@ class WC_Email_Verification {
                 wc_woo_email_verification_load_textdomain();
             }
             
+            // Enqueue WordPress editor scripts and styles for WYSIWYG
+            wp_enqueue_editor();
+            wp_enqueue_media();
+            
             wp_enqueue_script(
                 'wc-email-verification-admin',
                 WC_EMAIL_VERIFICATION_PLUGIN_URL . 'assets/js/admin.js',
-                array('jquery'),
+                array('jquery', 'wp-editor'),
                 WC_EMAIL_VERIFICATION_VERSION,
                 true
             );
@@ -180,7 +184,7 @@ class WC_Email_Verification {
             wp_enqueue_style(
                 'wc-email-verification-admin',
                 WC_EMAIL_VERIFICATION_PLUGIN_URL . 'assets/css/admin.css',
-                array(),
+                array('wp-admin', 'dashicons'),
                 WC_EMAIL_VERIFICATION_VERSION
             );
         }

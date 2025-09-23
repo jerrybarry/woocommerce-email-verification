@@ -48,6 +48,113 @@
     overflow: hidden;
 }
 
+/* Ensure tabs are visible */
+.wc-email-verification-tabs .nav-tab-wrapper {
+    border-bottom: 1px solid #ccd0d4;
+    background: #f1f1f1;
+    margin: 0;
+}
+
+.wc-email-verification-tabs .nav-tab {
+    display: inline-block;
+    padding: 10px 15px;
+    margin: 0;
+    border: none;
+    border-right: 1px solid #ccd0d4;
+    background: #f1f1f1;
+    color: #555;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.wc-email-verification-tabs .nav-tab:hover {
+    background: #fff;
+    color: #0073aa;
+}
+
+.wc-email-verification-tabs .nav-tab.nav-tab-active {
+    background: #fff;
+    color: #0073aa;
+    border-bottom: 1px solid #fff;
+    margin-bottom: -1px;
+}
+
+/* Tab content */
+.wc-email-verification-tabs .tab-content {
+    display: none;
+    padding: 20px;
+}
+
+.wc-email-verification-tabs .tab-content.active {
+    display: block;
+}
+
+/* WYSIWYG Editor Styles */
+.wc-email-template-editor {
+    min-height: 400px;
+}
+
+.wc-email-template-editor .wp-editor-area {
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+/* Email Designer specific styles */
+#email-designer {
+    background: #fff;
+}
+
+#email-designer .form-table th {
+    width: 200px;
+    vertical-align: top;
+    padding-top: 20px;
+}
+
+#email-designer input[type="color"] {
+    width: 60px;
+    height: 40px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#email-designer .designer-preview {
+    margin-top: 20px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    background: #f9f9f9;
+    border-radius: 4px;
+}
+
+#designer-preview-content {
+    background: #fff;
+    border: 1px solid #ddd;
+    padding: 20px;
+    border-radius: 4px;
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+/* Color picker wrapper */
+.color-picker-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.color-picker-wrapper input[type="color"] {
+    flex-shrink: 0;
+}
+
+.color-picker-wrapper .color-preview {
+    width: 30px;
+    height: 30px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    display: inline-block;
+}
+
 .nav-tab-wrapper {
     background: #f1f1f1;
     border-bottom: 1px solid #ccd0d4;

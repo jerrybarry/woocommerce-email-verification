@@ -203,16 +203,30 @@ class WC_Email_Verification_Admin {
                                 <td>
                                     <?php 
                                     $template_content = $settings['email_template'] ?? $this->get_default_email_template();
-                                    wp_editor($template_content, 'wc_email_verification_template', array(
-                                        'textarea_name' => 'wc_email_verification_settings[email_template]',
-                                        'textarea_rows' => 15,
-                                        'media_buttons' => false,
-                                        'teeny' => false,
-                                        'tinymce' => array(
-                                            'toolbar1' => 'formatselect,bold,italic,underline,|,bullist,numlist,blockquote,|,link,unlink,|,forecolor,backcolor,|,removeformat,fullscreen',
-                                            'toolbar2' => '',
-                                        ),
-                                    ));
+                                    // Ensure we have proper content for the editor
+                                    if (empty($template_content)) {
+                                        $template_content = $this->get_default_email_template();
+                                    }
+                                    
+                                    // Try to use wp_editor, fallback to textarea if it fails
+                                    if (function_exists('wp_editor')) {
+                                        wp_editor($template_content, 'wc_email_verification_template', array(
+                                            'textarea_name' => 'wc_email_verification_settings[email_template]',
+                                            'textarea_rows' => 15,
+                                            'media_buttons' => false,
+                                            'teeny' => false,
+                                            'quicktags' => true,
+                                            'tinymce' => array(
+                                                'toolbar1' => 'formatselect,bold,italic,underline,|,bullist,numlist,blockquote,|,link,unlink,|,forecolor,backcolor,|,removeformat,fullscreen',
+                                                'toolbar2' => '',
+                                                'content_css' => false,
+                                            ),
+                                            'editor_class' => 'wc-email-template-editor',
+                                        ));
+                                    } else {
+                                        // Fallback to textarea
+                                        echo '<textarea id="wc_email_verification_template" name="wc_email_verification_settings[email_template]" rows="15" cols="50" class="large-text wc-email-template-editor">' . esc_textarea($template_content) . '</textarea>';
+                                    }
                                     ?>
                                     <p class="description"><?php _e('Available placeholders: {verification_code}, {expiry_time}, {site_name}, {site_url}, {header_title}, {main_heading}, {intro_text}, {code_label}, {security_notice}, {footer_text}, {primary_color}, {secondary_color}, {text_color}, {background_color}', 'wc-email-verification'); ?></p>
                                     <div style="margin-top: 10px;">

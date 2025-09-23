@@ -416,6 +416,24 @@
     $(document).ready(function() {
         WCEmailVerificationAdmin.init();
         WCEmailVerificationAdmin.initDependentSettings();
+        
+        // Initialize WYSIWYG editor if it exists
+        if (typeof wp !== 'undefined' && wp.editor && wp.editor.initialize) {
+            // Wait a bit for the DOM to be fully ready
+            setTimeout(function() {
+                if ($('#wc_email_verification_template').length > 0) {
+                    wp.editor.initialize('wc_email_verification_template', {
+                        tinymce: {
+                            toolbar1: 'formatselect,bold,italic,underline,|,bullist,numlist,blockquote,|,link,unlink,|,forecolor,backcolor,|,removeformat,fullscreen',
+                            toolbar2: '',
+                            content_css: false,
+                        },
+                        quicktags: true,
+                        mediaButtons: false,
+                    });
+                }
+            }, 100);
+        }
     });
 
 })(jQuery);
