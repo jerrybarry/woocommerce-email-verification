@@ -43,15 +43,23 @@ class WC_Email_Verification_Frontend {
      * Add verification section to checkout
      */
     public function add_checkout_verification() {
-        if (WC_Email_Verification::get_instance()->get_setting('enabled', 'yes') !== 'yes') {
-            return;
+        try {
+            if (!class_exists('WC_Email_Verification')) {
+                return;
+            }
+            
+            if (WC_Email_Verification::get_instance()->get_setting('enabled', 'yes') !== 'yes') {
+                return;
+            }
+            
+            if (WC_Email_Verification::get_instance()->get_setting('checkout_required', 'yes') !== 'yes') {
+                return;
+            }
+            
+            $this->render_verification_section('checkout');
+        } catch (Exception $e) {
+            error_log('WC Email Verification Frontend Error: ' . $e->getMessage());
         }
-        
-        if (WC_Email_Verification::get_instance()->get_setting('checkout_required', 'yes') !== 'yes') {
-            return;
-        }
-        
-        $this->render_verification_section('checkout');
         
         // Add JavaScript for checkout page
         ?>
@@ -112,15 +120,23 @@ class WC_Email_Verification_Frontend {
      * Add verification section to registration
      */
     public function add_registration_verification() {
-        if (WC_Email_Verification::get_instance()->get_setting('enabled', 'yes') !== 'yes') {
-            return;
+        try {
+            if (!class_exists('WC_Email_Verification')) {
+                return;
+            }
+            
+            if (WC_Email_Verification::get_instance()->get_setting('enabled', 'yes') !== 'yes') {
+                return;
+            }
+            
+            if (WC_Email_Verification::get_instance()->get_setting('registration_required', 'yes') !== 'yes') {
+                return;
+            }
+            
+            $this->render_verification_section('registration');
+        } catch (Exception $e) {
+            error_log('WC Email Verification Frontend Error: ' . $e->getMessage());
         }
-        
-        if (WC_Email_Verification::get_instance()->get_setting('registration_required', 'yes') !== 'yes') {
-            return;
-        }
-        
-        $this->render_verification_section('registration');
         
         // Add JavaScript for registration page
         ?>
@@ -191,50 +207,130 @@ class WC_Email_Verification_Frontend {
         $expiry_minutes = $settings['code_expiry'] ?? 10;
         $code_length = $settings['code_length'] ?? 6;
         
+        // Render the popup modal
+        $this->render_verification_popup($context, $expiry_minutes, $code_length);
+        
+        // Render the trigger button (inline)
         ?>
         <div id="wc-email-verification-wrapper" class="wc-email-verification-wrapper" data-context="<?php echo esc_attr($context); ?>">
             <div id="wc-email-verification-trigger" class="wc-email-verification-trigger" style="display: none;">
                 <div class="wc-email-verification-header">
-                    <h3><?php echo wc_email_verification_translate('Email Verification'); ?></h3>
-                    <p><?php _e('Verify your email address to proceed', 'wc-email-verification'); ?></p>
+                    <h3><?php echo wc_email_verification_translate('Email Verification Required'); ?></h3>
+                    <p><?php _e('Please verify your email address to proceed with your order', 'wc-email-verification'); ?></p>
                 </div>
-                <button type="button" id="wc-send-verification-btn" class="button wc-email-verification-btn"><?php _e('Send Verification Code', 'wc-email-verification'); ?></button>
+                <button type="button" id="wc-open-verification-popup" class="button wc-email-verification-btn"><?php _e('Verify Email Address', 'wc-email-verification'); ?></button>
             </div>
-            
-            <div id="wc-email-verification-code-section" class="wc-email-verification-code-section" style="display: none;">
-                <div class="wc-email-verification-code-header">
-                    <h4><?php _e('Enter Verification Code', 'wc-email-verification'); ?></h4>
-                    <p><?php printf(__('We sent a %d-digit code to your email address', 'wc-email-verification'), $code_length); ?></p>
-                </div>
-                
-                <div class="wc-email-verification-code-input">
-                    <input type="text" 
-                           id="wc-verification-code" 
-                           name="verification_code" 
-                           maxlength="<?php echo esc_attr($code_length); ?>" 
-                           placeholder="<?php echo str_repeat('0', $code_length); ?>"
-                           class="wc-verification-code-input"
-                           autocomplete="one-time-code" />
-                    <button type="button" id="wc-verify-code-btn" class="button wc-email-verification-btn"><?php _e('Verify', 'wc-email-verification'); ?></button>
-                </div>
-                
-                <div class="wc-email-verification-code-actions">
-                    <button type="button" id="wc-resend-verification-btn" class="button-link">
-                        <?php _e('Resend Code', 'wc-email-verification'); ?>
-                    </button>
-                    <span class="wc-email-verification-timer" id="wc-verification-timer" style="display: none;">
-                        <?php printf(__('Resend available in %s', 'wc-email-verification'), '<span id="wc-timer-countdown">60</span>s'); ?>
-                    </span>
-                </div>
-            </div>
-            
-            <div id="wc-verification-messages" class="wc-verification-messages"></div>
             
             <div id="wc-email-verification-success" class="wc-email-verification-success" style="display: none;">
                 <div class="success-icon">✓</div>
                 <div class="success-message">
                     <h4><?php _e('Email Verified!', 'wc-email-verification'); ?></h4>
                     <p><?php _e('Your email address has been successfully verified.', 'wc-email-verification'); ?></p>
+                </div>
+            </div>
+        </div>
+        <?php
+    }
+    
+    /**
+     * Render verification popup modal
+     *
+     * @param string $context
+     * @param int $expiry_minutes
+     * @param int $code_length
+     */
+    private function render_verification_popup($context, $expiry_minutes, $code_length) {
+        ?>
+        <div id="wc-email-verification-popup" class="wc-email-verification-popup" style="display: none;">
+            <div class="wc-email-verification-popup-overlay"></div>
+            <div class="wc-email-verification-popup-content">
+                <div class="wc-email-verification-popup-header">
+                    <h3><?php _e('Email Verification', 'wc-email-verification'); ?></h3>
+                    <button type="button" id="wc-close-verification-popup" class="wc-email-verification-popup-close">&times;</button>
+                </div>
+                
+                <div class="wc-email-verification-popup-body">
+                    <!-- Step 1: Send Code -->
+                    <div id="wc-verification-step-1" class="wc-verification-step active">
+                        <div class="wc-verification-step-content">
+                            <div class="wc-verification-icon">
+                                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                    <polyline points="22,6 12,13 2,6"/>
+                                </svg>
+                            </div>
+                            <h4><?php _e('Verify Your Email Address', 'wc-email-verification'); ?></h4>
+                            <p><?php _e('We need to verify your email address to ensure account security and prevent fraud.', 'wc-email-verification'); ?></p>
+                            <div class="wc-verification-email-display">
+                                <strong><?php _e('Email:', 'wc-email-verification'); ?></strong>
+                                <span id="wc-popup-email-display"></span>
+                            </div>
+                            <button type="button" id="wc-send-verification-btn" class="button wc-email-verification-btn">
+                                <?php _e('Send Verification Code', 'wc-email-verification'); ?>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 2: Enter Code -->
+                    <div id="wc-verification-step-2" class="wc-verification-step">
+                        <div class="wc-verification-step-content">
+                            <div class="wc-verification-icon">
+                                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                                    <circle cx="12" cy="16" r="1"/>
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                                </svg>
+                            </div>
+                            <h4><?php _e('Enter Verification Code', 'wc-email-verification'); ?></h4>
+                            <p><?php printf(__('We sent a %d-digit verification code to your email address', 'wc-email-verification'), $code_length); ?></p>
+                            
+                            <div class="wc-verification-code-input-wrapper">
+                                <input type="text" 
+                                       id="wc-verification-code" 
+                                       name="verification_code" 
+                                       maxlength="<?php echo esc_attr($code_length); ?>" 
+                                       placeholder="<?php echo str_repeat('0', $code_length); ?>"
+                                       class="wc-verification-code-input"
+                                       autocomplete="one-time-code" />
+                                <button type="button" id="wc-verify-code-btn" class="button wc-email-verification-btn"><?php _e('Verify Code', 'wc-email-verification'); ?></button>
+                            </div>
+                            
+                            <div class="wc-verification-code-actions">
+                                <button type="button" id="wc-resend-verification-btn" class="button-link">
+                                    <?php _e('Resend Code', 'wc-email-verification'); ?>
+                                </button>
+                                <span class="wc-email-verification-timer" id="wc-verification-timer" style="display: none;">
+                                    <?php printf(__('Resend available in %s', 'wc-email-verification'), '<span id="wc-timer-countdown">60</span>s'); ?>
+                                </span>
+                            </div>
+                            
+                            <div class="wc-verification-back-action">
+                                <button type="button" id="wc-back-to-step-1" class="button-link">
+                                    <?php _e('← Back to email verification', 'wc-email-verification'); ?>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 3: Success -->
+                    <div id="wc-verification-step-3" class="wc-verification-step">
+                        <div class="wc-verification-step-content">
+                            <div class="wc-verification-icon success">
+                                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                    <polyline points="22,4 12,14.01 9,11.01"/>
+                                </svg>
+                            </div>
+                            <h4><?php _e('Email Verified Successfully!', 'wc-email-verification'); ?></h4>
+                            <p><?php _e('Your email address has been verified. You can now proceed with your order.', 'wc-email-verification'); ?></p>
+                            <button type="button" id="wc-close-verification-popup-success" class="button wc-email-verification-btn">
+                                <?php _e('Continue', 'wc-email-verification'); ?>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Messages -->
+                    <div id="wc-popup-verification-messages" class="wc-popup-verification-messages"></div>
                 </div>
             </div>
         </div>

@@ -84,19 +84,30 @@ class WC_Email_Verification {
      * Initialize other classes
      */
     public function init_classes() {
-        // Initialize admin
-        if (is_admin()) {
-            new WC_Email_Verification_Admin();
+        try {
+            // Initialize admin
+            if (is_admin() && class_exists('WC_Email_Verification_Admin')) {
+                new WC_Email_Verification_Admin();
+            }
+            
+            // Initialize AJAX handlers
+            if (class_exists('WC_Email_Verification_Ajax')) {
+                new WC_Email_Verification_Ajax();
+            }
+            
+            // Initialize frontend
+            if (class_exists('WC_Email_Verification_Frontend')) {
+                new WC_Email_Verification_Frontend();
+            }
+            
+            // Initialize email handler
+            if (class_exists('WC_Email_Verification_Email')) {
+                new WC_Email_Verification_Email();
+            }
+        } catch (Exception $e) {
+            // Log error but don't break the site
+            error_log('WC Email Verification: Error initializing classes - ' . $e->getMessage());
         }
-        
-        // Initialize AJAX handlers
-        new WC_Email_Verification_Ajax();
-        
-        // Initialize frontend
-        new WC_Email_Verification_Frontend();
-        
-        // Initialize email handler
-        new WC_Email_Verification_Email();
     }
     
     /**

@@ -39,6 +39,18 @@
         bindEvents: function() {
             var self = this;
             
+            // Open popup
+            $(document).on('click', '#wc-open-verification-popup', function(e) {
+                e.preventDefault();
+                self.openVerificationPopup();
+            });
+            
+            // Close popup
+            $(document).on('click', '#wc-close-verification-popup, #wc-close-verification-popup-success, .wc-email-verification-popup-overlay', function(e) {
+                e.preventDefault();
+                self.closeVerificationPopup();
+            });
+            
             // Send verification code
             $(document).on('click', '#wc-send-verification-btn', function(e) {
                 e.preventDefault();
@@ -57,6 +69,12 @@
                 self.resendVerificationCode();
             });
             
+            // Back to step 1
+            $(document).on('click', '#wc-back-to-step-1', function(e) {
+                e.preventDefault();
+                self.goToStep(1);
+            });
+            
             // Enter key on verification code input
             $(document).on('keypress', '#wc-verification-code', function(e) {
                 if (e.which === 13) {
@@ -65,12 +83,18 @@
                 }
             });
             
+            // Escape key to close popup
+            $(document).on('keydown', function(e) {
+                if (e.keyCode === 27 && $('#wc-email-verification-popup').is(':visible')) {
+                    self.closeVerificationPopup();
+                }
+            });
+            
             // Block form submission if not verified
             $(document).on('submit', 'form.checkout, form.woocommerce-form-register', function(e) {
                 if (!self.state.emailVerified) {
                     e.preventDefault();
-                    self.showMessage(self.config.messages.verifyEmailFirst, 'error');
-                    self.scrollToVerification();
+                    self.openVerificationPopup();
                     return false;
                 }
             });
@@ -184,7 +208,7 @@
             var button = $('#wc-send-verification-btn');
             
             if (!email) {
-                this.showMessage(this.config.messages.invalidEmail, 'error');
+                this.showPopupMessage(this.config.messages.invalidEmail, 'error');
                 return;
             }
             
@@ -202,17 +226,16 @@
                     self.setButtonLoading(button, false);
                     
                     if (response.success) {
-                        self.showMessage(response.data.message, 'success');
-                        $('#wc-email-verification-code-section').show();
-                        $('#wc-verification-code').focus();
+                        self.showPopupMessage(response.data.message, 'success');
+                        self.goToStep(2);
                         self.startResendTimer();
                     } else {
-                        self.showMessage(response.data.message, 'error');
+                        self.showPopupMessage(response.data.message, 'error');
                     }
                 },
                 error: function(xhr, status, error) {
                     self.setButtonLoading(button, false);
-                    self.showMessage(self.config.messages.networkError, 'error');
+                    self.showPopupMessage(self.config.messages.networkError, 'error');
                 }
             });
         },
@@ -225,7 +248,7 @@
             var button = $('#wc-verify-code-btn');
             
             if (!code) {
-                this.showMessage(this.config.messages.enterCode, 'error');
+                this.showPopupMessage(this.config.messages.enterCode, 'error');
                 $('#wc-verification-code').focus();
                 return;
             }
@@ -246,15 +269,22 @@
                     
                     if (response.success) {
                         self.state.emailVerified = true;
-                        self.showSuccessState();
+                        self.goToStep(3);
                         self.clearTimer();
+                        self.updateSubmitButtonState();
+                        
+                        // Close popup after 2 seconds
+                        setTimeout(function() {
+                            self.closeVerificationPopup();
+                            self.showSuccessState();
+                        }, 2000);
                     } else {
-                        self.showMessage(response.data.message, 'error');
+                        self.showPopupMessage(response.data.message, 'error');
                     }
                 },
                 error: function(xhr, status, error) {
                     self.setButtonLoading(button, false);
-                    self.showMessage(self.config.messages.networkError, 'error');
+                    self.showPopupMessage(self.config.messages.networkError, 'error');
                 }
             });
         },
@@ -266,7 +296,7 @@
             var button = $('#wc-resend-verification-btn');
             
             if (!email) {
-                this.showMessage(this.config.messages.invalidEmail, 'error');
+                this.showPopupMessage(this.config.messages.invalidEmail, 'error');
                 return;
             }
             
@@ -284,15 +314,15 @@
                     self.setButtonLoading(button, false);
                     
                     if (response.success) {
-                        self.showMessage(response.data.message, 'success');
+                        self.showPopupMessage(response.data.message, 'success');
                         self.startResendTimer();
                     } else {
-                        self.showMessage(response.data.message, 'error');
+                        self.showPopupMessage(response.data.message, 'error');
                     }
                 },
                 error: function(xhr, status, error) {
                     self.setButtonLoading(button, false);
-                    self.showMessage(self.config.messages.networkError, 'error');
+                    self.showPopupMessage(self.config.messages.networkError, 'error');
                 }
             });
         },
@@ -406,7 +436,15 @@
                         // Email is already verified
                         self.state.emailVerified = true;
                         $('#wc-email-verification-wrapper').addClass('show');
+                        
+                        // If popup is open, show success step
+                        if ($('#wc-email-verification-popup').is(':visible')) {
+                            self.goToStep(3);
+                            self.closeVerificationPopup();
+                        }
+                        
                         self.showSuccessState();
+                        self.updateSubmitButtonState();
                     }
                 },
                 error: function(xhr, status, error) {
@@ -420,6 +458,82 @@
             $('html, body').animate({
                 scrollTop: $('#wc-email-verification-wrapper').offset().top - 100
             }, 500);
+        },
+        
+        // Open verification popup
+        openVerificationPopup: function() {
+            var email = this.getCurrentEmail();
+            if (!email || !this.isValidEmail(email)) {
+                this.showPopupMessage(this.config.messages.invalidEmail, 'error');
+                return;
+            }
+            
+            // Update email display in popup
+            $('#wc-popup-email-display').text(email);
+            
+            // Reset popup state
+            this.resetPopupState();
+            
+            // Show popup with proper animation
+            $('#wc-email-verification-popup').show().addClass('show');
+            $('body').addClass('wc-email-verification-popup-open');
+            
+            // Check if email is already verified
+            this.checkEmailVerificationStatus(email);
+        },
+        
+        // Close verification popup
+        closeVerificationPopup: function() {
+            var self = this;
+            $('#wc-email-verification-popup').removeClass('show');
+            $('body').removeClass('wc-email-verification-popup-open');
+            
+            // Hide popup after animation
+            setTimeout(function() {
+                $('#wc-email-verification-popup').hide();
+            }, 300);
+            
+            this.clearPopupMessages();
+        },
+        
+        // Reset popup state
+        resetPopupState: function() {
+            this.goToStep(1);
+            $('#wc-verification-code').val('');
+            this.clearPopupMessages();
+            this.clearTimer();
+        },
+        
+        // Go to specific step
+        goToStep: function(step) {
+            $('.wc-verification-step').removeClass('active');
+            $('#wc-verification-step-' + step).addClass('active');
+            
+            if (step === 2) {
+                setTimeout(function() {
+                    $('#wc-verification-code').focus();
+                }, 300);
+            }
+        },
+        
+        // Show popup message
+        showPopupMessage: function(message, type) {
+            var messageClass = 'wc-verification-message-' + type;
+            var messageHtml = '<div class="wc-verification-message ' + messageClass + '">' + message + '</div>';
+            
+            $('#wc-popup-verification-messages').html(messageHtml);
+            
+            // Auto-hide success messages after 5 seconds
+            if (type === 'success') {
+                setTimeout(function() {
+                    $('#wc-popup-verification-messages .wc-verification-message-success').fadeOut();
+                }, 5000);
+            }
+        },
+        
+        // Clear popup messages
+        clearPopupMessages: function() {
+            $('#wc-popup-verification-messages').empty();
         }
     };
 

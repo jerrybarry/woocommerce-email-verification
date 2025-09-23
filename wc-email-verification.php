@@ -58,8 +58,26 @@ require_once WC_EMAIL_VERIFICATION_PLUGIN_DIR . 'includes/class-wc-email-verific
  * Initialize the plugin
  */
 function wc_email_verification_init() {
-    // Initialize main plugin class
-    WC_Email_Verification::get_instance();
+    try {
+        // Check if main class exists
+        if (!class_exists('WC_Email_Verification')) {
+            error_log('WC Email Verification: Main class not found');
+            return;
+        }
+        
+        // Initialize main plugin class
+        WC_Email_Verification::get_instance();
+        
+    } catch (Exception $e) {
+        error_log('WC Email Verification: Initialization error - ' . $e->getMessage());
+        
+        // Show admin notice if in admin area
+        if (is_admin()) {
+            add_action('admin_notices', function() use ($e) {
+                echo '<div class="notice notice-error"><p>WC Email Verification Error: ' . esc_html($e->getMessage()) . '</p></div>';
+            });
+        }
+    }
 }
 
 // Hook into WordPress
@@ -187,14 +205,44 @@ if (defined('WP_DEBUG') && WP_DEBUG) {
  */
 register_activation_hook(__FILE__, 'wc_email_verification_activate');
 function wc_email_verification_activate() {
-    // Create database tables
-    WC_Email_Verification_Database::create_tables();
-    
-    // Set default options
-    WC_Email_Verification::set_default_options();
-    
-    // Flush rewrite rules
-    flush_rewrite_rules();
+    try {
+        // Ensure classes are loaded
+        if (!class_exists('WC_Email_Verification_Database')) {
+            require_once WC_EMAIL_VERIFICATION_PLUGIN_DIR . 'includes/class-wc-email-verification-database.php';
+        }
+        
+        if (!class_exists('WC_Email_Verification')) {
+            require_once WC_EMAIL_VERIFICATION_PLUGIN_DIR . 'includes/class-wc-email-verification.php';
+        }
+        
+        // Create database tables
+        if (class_exists('WC_Email_Verification_Database')) {
+            WC_Email_Verification_Database::create_tables();
+        }
+        
+        // Set default options
+        if (class_exists('WC_Email_Verification')) {
+            WC_Email_Verification::set_default_options();
+        }
+        
+        // Flush rewrite rules
+        flush_rewrite_rules();
+        
+    } catch (Exception $e) {
+        // Log the error
+        error_log('WC Email Verification Activation Error: ' . $e->getMessage());
+        
+        // Deactivate the plugin to prevent further issues
+        deactivate_plugins(plugin_basename(__FILE__));
+        
+        // Show error message
+        wp_die(
+            'WooCommerce Email Verification plugin activation failed: ' . $e->getMessage() . 
+            '<br><br>Please check your error logs and try again.',
+            'Plugin Activation Error',
+            array('back_link' => true)
+        );
+    }
 }
 
 /**
@@ -211,6 +259,11 @@ function wc_email_verification_deactivate() {
  */
 register_uninstall_hook(__FILE__, 'wc_email_verification_uninstall');
 function wc_email_verification_uninstall() {
+    // Ensure classes are loaded
+    if (!class_exists('WC_Email_Verification_Database')) {
+        require_once WC_EMAIL_VERIFICATION_PLUGIN_DIR . 'includes/class-wc-email-verification-database.php';
+    }
+    
     // Remove database tables
     WC_Email_Verification_Database::drop_tables();
     

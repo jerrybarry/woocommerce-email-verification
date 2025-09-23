@@ -341,3 +341,347 @@ button:disabled:hover {
         transition: none;
     }
 }
+
+/* ========================================
+   POPUP MODAL STYLES
+   ======================================== */
+
+/* Popup overlay */
+.wc-email-verification-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 999999;
+    display: none;
+}
+
+.wc-email-verification-popup-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(2px);
+}
+
+.wc-email-verification-popup-content {
+    position: relative;
+    width: 90%;
+    max-width: 500px;
+    margin: 5% auto;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    transform: scale(0.9);
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.wc-email-verification-popup.show .wc-email-verification-popup-content {
+    transform: scale(1);
+    opacity: 1;
+}
+
+/* Popup header */
+.wc-email-verification-popup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    background: linear-gradient(135deg, #0073aa 0%, #005a87 100%);
+    color: white;
+}
+
+.wc-email-verification-popup-header h3 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.wc-email-verification-popup-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 28px;
+    font-weight: 300;
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.2s ease;
+}
+
+.wc-email-verification-popup-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Popup body */
+.wc-email-verification-popup-body {
+    padding: 0;
+    position: relative;
+    min-height: 400px;
+}
+
+/* Verification steps */
+.wc-verification-step {
+    display: none;
+    padding: 40px 24px;
+    text-align: center;
+    animation: fadeInUp 0.4s ease;
+}
+
+.wc-verification-step.active {
+    display: block;
+}
+
+.wc-verification-step-content {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+/* Icons */
+.wc-verification-icon {
+    margin: 0 auto 24px;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8f9fa;
+    border-radius: 50%;
+    color: #0073aa;
+    transition: all 0.3s ease;
+}
+
+.wc-verification-icon.success {
+    background: #d4edda;
+    color: #28a745;
+}
+
+.wc-verification-icon svg {
+    width: 40px;
+    height: 40px;
+}
+
+/* Step content */
+.wc-verification-step h4 {
+    margin: 0 0 12px 0;
+    font-size: 22px;
+    font-weight: 600;
+    color: #333;
+}
+
+.wc-verification-step p {
+    margin: 0 0 24px 0;
+    color: #666;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+/* Email display */
+.wc-verification-email-display {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 16px;
+    margin: 24px 0;
+    text-align: left;
+}
+
+.wc-verification-email-display strong {
+    color: #333;
+    display: block;
+    margin-bottom: 4px;
+    font-size: 14px;
+}
+
+.wc-verification-email-display span {
+    color: #0073aa;
+    font-weight: 500;
+    font-size: 16px;
+}
+
+/* Code input wrapper */
+.wc-verification-code-input-wrapper {
+    margin: 24px 0;
+}
+
+.wc-verification-code-input {
+    width: 100%;
+    max-width: 200px;
+    padding: 16px;
+    font-size: 24px;
+    text-align: center;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-family: 'Courier New', monospace;
+    letter-spacing: 4px;
+    margin-bottom: 16px;
+    transition: border-color 0.3s ease;
+}
+
+.wc-verification-code-input:focus {
+    outline: none;
+    border-color: #0073aa;
+    box-shadow: 0 0 0 3px rgba(0, 115, 170, 0.1);
+}
+
+/* Code actions */
+.wc-verification-code-actions {
+    margin: 16px 0 24px 0;
+}
+
+.wc-verification-back-action {
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid #e9ecef;
+}
+
+.wc-verification-back-action .button-link {
+    color: #0073aa;
+    font-size: 14px;
+}
+
+/* Popup messages */
+.wc-popup-verification-messages {
+    margin: 16px 0 0 0;
+}
+
+.wc-popup-verification-messages .wc-verification-message {
+    margin: 0;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Body scroll lock when popup is open */
+body.wc-email-verification-popup-open {
+    overflow: hidden;
+}
+
+/* Responsive popup */
+@media (max-width: 768px) {
+    .wc-email-verification-popup-content {
+        width: 95%;
+        margin: 10% auto;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+    
+    .wc-email-verification-popup-header {
+        padding: 16px 20px;
+    }
+    
+    .wc-email-verification-popup-header h3 {
+        font-size: 18px;
+    }
+    
+    .wc-verification-step {
+        padding: 30px 20px;
+    }
+    
+    .wc-verification-icon {
+        width: 60px;
+        height: 60px;
+        margin-bottom: 20px;
+    }
+    
+    .wc-verification-icon svg {
+        width: 30px;
+        height: 30px;
+    }
+    
+    .wc-verification-step h4 {
+        font-size: 20px;
+    }
+    
+    .wc-verification-step p {
+        font-size: 15px;
+    }
+    
+    .wc-verification-code-input {
+        font-size: 20px;
+        padding: 14px;
+        max-width: 160px;
+    }
+}
+
+@media (max-width: 480px) {
+    .wc-email-verification-popup-content {
+        width: 98%;
+        margin: 5% auto;
+        border-radius: 8px;
+    }
+    
+    .wc-email-verification-popup-header {
+        padding: 14px 16px;
+    }
+    
+    .wc-verification-step {
+        padding: 24px 16px;
+    }
+    
+    .wc-verification-code-input {
+        font-size: 18px;
+        padding: 12px;
+        max-width: 140px;
+        letter-spacing: 2px;
+    }
+    
+    .wc-verification-step h4 {
+        font-size: 18px;
+    }
+    
+    .wc-verification-step p {
+        font-size: 14px;
+    }
+}
+
+/* High contrast mode for popup */
+@media (prefers-contrast: high) {
+    .wc-email-verification-popup-content {
+        border: 2px solid #000;
+    }
+    
+    .wc-email-verification-popup-header {
+        background: #000;
+    }
+    
+    .wc-verification-code-input {
+        border: 2px solid #000;
+    }
+}
+
+/* Reduced motion for popup */
+@media (prefers-reduced-motion: reduce) {
+    .wc-email-verification-popup-content {
+        transition: none;
+    }
+    
+    .wc-verification-step {
+        animation: none;
+    }
+    
+    .wc-verification-icon {
+        transition: none;
+    }
+}
