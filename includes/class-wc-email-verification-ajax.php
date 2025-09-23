@@ -59,13 +59,12 @@ class WC_Email_Verification_Ajax {
             }
             
             // Check if email is already verified
-            if (!session_id()) {
-                session_start();
-            }
-            
-            $verification_key = 'wc_email_verified_' . md5($email);
-            if (isset($_SESSION[$verification_key]) && $_SESSION[$verification_key]) {
-                throw new Exception(__('This email address has already been verified.', 'wc-email-verification'));
+            // Session should already be started by the main plugin file
+            if (function_exists('wc_woo_email_verification_session_available') && wc_woo_email_verification_session_available()) {
+                $verification_key = 'wc_email_verified_' . md5($email);
+                if (isset($_SESSION[$verification_key]) && $_SESSION[$verification_key]) {
+                    throw new Exception(__('This email address has already been verified.', 'wc-email-verification'));
+                }
             }
             
             // Check database for recent verification
@@ -190,10 +189,10 @@ class WC_Email_Verification_Ajax {
             );
             
             // Store verification status in session
-            if (!session_id()) {
-                session_start();
+            // Session should already be started by the main plugin file
+            if (function_exists('wc_woo_email_verification_session_available') && wc_woo_email_verification_session_available()) {
+                $_SESSION['wc_email_verified_' . md5($email)] = true;
             }
-            $_SESSION['wc_email_verified_' . md5($email)] = true;
             
             // Log action
             WC_Email_Verification_Database::log_action($email, 'code_verified', array(
@@ -315,12 +314,12 @@ class WC_Email_Verification_Ajax {
             }
             
             // Check if email is verified in session
-            if (!session_id()) {
-                session_start();
+            // Session should already be started by the main plugin file
+            $is_verified = false;
+            if (function_exists('wc_woo_email_verification_session_available') && wc_woo_email_verification_session_available()) {
+                $verification_key = 'wc_email_verified_' . md5($email);
+                $is_verified = isset($_SESSION[$verification_key]) && $_SESSION[$verification_key];
             }
-            
-            $verification_key = 'wc_email_verified_' . md5($email);
-            $is_verified = isset($_SESSION[$verification_key]) && $_SESSION[$verification_key];
             
             // Also check database for recent verification
             if (!$is_verified) {

@@ -215,7 +215,7 @@ class WC_Email_Verification_Frontend {
         <div id="wc-email-verification-wrapper" class="wc-email-verification-wrapper" data-context="<?php echo esc_attr($context); ?>">
             <div id="wc-email-verification-trigger" class="wc-email-verification-trigger" style="display: none;">
                 <div class="wc-email-verification-header">
-                    <h3><?php echo wc_email_verification_translate('Email Verification Required'); ?></h3>
+                    <h3><?php _e('Email Verification Required', 'wc-email-verification'); ?></h3>
                     <p><?php _e('Please verify your email address to proceed with your order', 'wc-email-verification'); ?></p>
                 </div>
                 <button type="button" id="wc-open-verification-popup" class="button wc-email-verification-btn"><?php _e('Verify Email Address', 'wc-email-verification'); ?></button>
@@ -349,9 +349,7 @@ class WC_Email_Verification_Frontend {
             return;
         }
         
-        if (!session_id()) {
-            session_start();
-        }
+        // Session should already be started by the main plugin file
         
         $email = $_POST['billing_email'] ?? '';
         $verification_key = 'wc_email_verified_' . md5($email);
@@ -372,9 +370,7 @@ class WC_Email_Verification_Frontend {
      * @param bool $password_generated
      */
     public function handle_verified_registration($customer_id, $new_customer_data, $password_generated) {
-        if (!session_id()) {
-            session_start();
-        }
+        // Session should already be started by the main plugin file
         
         $email = $new_customer_data['user_email'];
         $verification_key = 'wc_email_verified_' . md5($email);
@@ -430,9 +426,7 @@ class WC_Email_Verification_Frontend {
      * @return bool
      */
     public static function is_email_verified($email) {
-        if (!session_id()) {
-            session_start();
-        }
+        // Session should already be started by the main plugin file
         
         $verification_key = 'wc_email_verified_' . md5($email);
         return isset($_SESSION[$verification_key]) && $_SESSION[$verification_key];

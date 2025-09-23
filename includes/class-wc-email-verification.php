@@ -49,8 +49,8 @@ class WC_Email_Verification {
      * Initialize hooks
      */
     private function init_hooks() {
-        // Load text domain early
-        add_action('plugins_loaded', array($this, 'load_textdomain'), 1);
+        // Load text domain at proper time
+        add_action('init', array($this, 'load_textdomain'), 1);
         
         add_action('init', array($this, 'init'));
         add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'));
@@ -67,17 +67,18 @@ class WC_Email_Verification {
      * Load text domain
      */
     public function load_textdomain() {
-        load_plugin_textdomain('wc-email-verification', false, dirname(plugin_basename(WC_EMAIL_VERIFICATION_PLUGIN_FILE)) . '/languages');
+        // Use the safe helper function
+        if (function_exists('wc_woo_email_verification_load_textdomain')) {
+            wc_woo_email_verification_load_textdomain();
+        }
     }
     
     /**
      * Initialize plugin
      */
     public function init() {
-        // Start session if not already started
-        if (!session_id()) {
-            session_start();
-        }
+        // Session is already started by the main plugin file
+        // This method can be used for other initialization if needed
     }
     
     /**
@@ -119,6 +120,12 @@ class WC_Email_Verification {
             (function_exists('is_woocommerce') && is_woocommerce()) ||
             (isset($_GET['action']) && $_GET['action'] === 'register') ||
             (is_page() && (strpos(get_permalink(), 'register') !== false || strpos(get_permalink(), 'my-account') !== false))) {
+            
+            // Ensure text domain is loaded before using translation functions
+            if (function_exists('wc_woo_email_verification_load_textdomain')) {
+                wc_woo_email_verification_load_textdomain();
+            }
+            
             wp_enqueue_script(
                 'wc-email-verification',
                 WC_EMAIL_VERIFICATION_PLUGIN_URL . 'assets/js/email-verification.js',
@@ -157,6 +164,11 @@ class WC_Email_Verification {
      */
     public function admin_enqueue_scripts($hook) {
         if (strpos($hook, 'wc-email-verification') !== false) {
+            // Ensure text domain is loaded before using translation functions
+            if (function_exists('wc_woo_email_verification_load_textdomain')) {
+                wc_woo_email_verification_load_textdomain();
+            }
+            
             wp_enqueue_script(
                 'wc-email-verification-admin',
                 WC_EMAIL_VERIFICATION_PLUGIN_URL . 'assets/js/admin.js',
@@ -212,7 +224,7 @@ class WC_Email_Verification {
             'code_expiry' => 10, // minutes
             'code_length' => 6,
             'rate_limit' => 5, // attempts per hour
-            'email_subject' => __('Your Verification Code - {site_name}', 'wc-email-verification'),
+            'email_subject' => 'Your Verification Code - {site_name}',
             'email_template' => '<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff;">
     <div style="background: #0073aa; color: white; padding: 20px; text-align: center;">
         <h1 style="margin: 0; font-size: 24px;">Email Verification</h1>
@@ -281,7 +293,7 @@ class WC_Email_Verification {
             'code_expiry' => 10,
             'code_length' => 6,
             'rate_limit' => 5,
-            'email_subject' => __('Your Verification Code - {site_name}', 'wc-email-verification'),
+            'email_subject' => 'Your Verification Code - {site_name}',
             'email_template' => '<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff;">
     <div style="background: #0073aa; color: white; padding: 20px; text-align: center;">
         <h1 style="margin: 0; font-size: 24px;">Email Verification</h1>

@@ -9,13 +9,6 @@ This directory contains translation files for the WooCommerce Email Verification
 
 ## How to Translate
 
-### Using Polylang
-
-1. Install and activate Polylang plugin
-2. Go to **Languages** → **String Translations**
-3. Select the domain `wc-email-verification`
-4. Translate all the strings shown
-
 ### Using Loco Translate
 
 1. Install and activate Loco Translate plugin
