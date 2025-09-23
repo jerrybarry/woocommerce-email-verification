@@ -339,6 +339,7 @@ class WC_Email_Verification {
     public function get_default_email_template() {
         return '<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: {background_color};">
     <div style="background: linear-gradient(135deg, {primary_color} 0%, {secondary_color} 100%); color: white; padding: 20px; text-align: center;">
+        {email_logo}
         <h1 style="margin: 0; font-size: 24px;">{header_title}</h1>
     </div>
     <div style="padding: 30px 20px; background: #ffffff;">

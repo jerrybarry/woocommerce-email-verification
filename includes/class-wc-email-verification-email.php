@@ -111,6 +111,9 @@ class WC_Email_Verification_Email {
         $security_notice = $settings['email_security_notice'] ?? 'If you didn\'t request this verification code, please ignore this email. Your account security is important to us.';
         $footer_text = $settings['email_footer_text'] ?? 'Best regards,<br>The {site_name} Team';
         
+        // Get logo HTML
+        $email_logo = $this->get_email_logo_html($settings);
+        
         // Replace all placeholders
         $content = str_replace(
             array(
@@ -123,7 +126,8 @@ class WC_Email_Verification_Email {
                 '{intro_text}',
                 '{code_label}',
                 '{security_notice}',
-                '{footer_text}'
+                '{footer_text}',
+                '{email_logo}'
             ),
             array(
                 $verification_code, 
@@ -135,7 +139,8 @@ class WC_Email_Verification_Email {
                 $intro_text,
                 $code_label,
                 $security_notice,
-                $footer_text
+                $footer_text,
+                $email_logo
             ),
             $template
         );
@@ -155,6 +160,23 @@ class WC_Email_Verification_Email {
         }
         
         return $content;
+    }
+    
+    /**
+     * Get email logo HTML
+     *
+     * @param array $settings
+     * @return string
+     */
+    private function get_email_logo_html($settings) {
+        $logo_url = $settings['email_logo_url'] ?? '';
+        $logo_height = $settings['email_logo_height'] ?? '60';
+        
+        if (empty($logo_url)) {
+            return '';
+        }
+        
+        return '<div style="margin-bottom: 15px;"><img src="' . esc_url($logo_url) . '" alt="' . esc_attr(get_bloginfo('name')) . '" style="max-height: ' . intval($logo_height) . 'px; width: auto; display: block; margin: 0 auto;" /></div>';
     }
     
     /**

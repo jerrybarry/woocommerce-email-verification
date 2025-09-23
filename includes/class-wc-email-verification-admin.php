@@ -228,7 +228,7 @@ class WC_Email_Verification_Admin {
                                         echo '<textarea id="wc_email_verification_template" name="wc_email_verification_settings[email_template]" rows="15" cols="50" class="large-text wc-email-template-editor">' . esc_textarea($template_content) . '</textarea>';
                                     }
                                     ?>
-                                    <p class="description"><?php _e('Available placeholders: {verification_code}, {expiry_time}, {site_name}, {site_url}, {header_title}, {main_heading}, {intro_text}, {code_label}, {security_notice}, {footer_text}, {primary_color}, {secondary_color}, {text_color}, {background_color}', 'wc-email-verification'); ?></p>
+                                    <p class="description"><?php _e('Available placeholders: {verification_code}, {expiry_time}, {site_name}, {site_url}, {header_title}, {main_heading}, {intro_text}, {code_label}, {security_notice}, {footer_text}, {email_logo}, {primary_color}, {secondary_color}, {text_color}, {background_color}', 'wc-email-verification'); ?></p>
                                     <div style="margin-top: 10px;">
                                         <button type="button" id="preview-email-template" class="button"><?php _e('Preview Template', 'wc-email-verification'); ?></button>
                                         <button type="button" id="reset-email-template" class="button"><?php _e('Reset to Default', 'wc-email-verification'); ?></button>
@@ -255,6 +255,41 @@ class WC_Email_Verification_Admin {
                     <div id="email-designer" class="tab-content">
                         <h3><?php _e('Email Designer', 'wc-email-verification'); ?></h3>
                         <p class="description"><?php _e('Design your email verification template with colors, content, and styling. Use the "Generate Template" button to apply these settings to your email template.', 'wc-email-verification'); ?></p>
+                        
+                        <h4><?php _e('Email Logo', 'wc-email-verification'); ?></h4>
+                        <table class="form-table">
+                            <tr>
+                                <th scope="row"><?php _e('Header Logo', 'wc-email-verification'); ?></th>
+                                <td>
+                                    <div class="logo-upload-wrapper">
+                                        <input type="hidden" id="email_logo_url" name="wc_email_verification_settings[email_logo_url]" value="<?php echo esc_attr($settings['email_logo_url'] ?? ''); ?>" />
+                                        <input type="hidden" id="email_logo_id" name="wc_email_verification_settings[email_logo_id]" value="<?php echo esc_attr($settings['email_logo_id'] ?? ''); ?>" />
+                                        
+                                        <div id="logo-preview" class="logo-preview" style="<?php echo !empty($settings['email_logo_url']) ? '' : 'display: none;'; ?>">
+                                            <img src="<?php echo esc_url($settings['email_logo_url'] ?? ''); ?>" alt="Email Logo" style="max-width: 200px; max-height: 80px; border: 1px solid #ddd; padding: 10px; background: #fff;" />
+                                            <div class="logo-actions">
+                                                <button type="button" id="change-logo" class="button"><?php _e('Change Logo', 'wc-email-verification'); ?></button>
+                                                <button type="button" id="remove-logo" class="button"><?php _e('Remove Logo', 'wc-email-verification'); ?></button>
+                                            </div>
+                                        </div>
+                                        
+                                        <div id="no-logo" class="no-logo" style="<?php echo !empty($settings['email_logo_url']) ? 'display: none;' : ''; ?>">
+                                            <button type="button" id="upload-logo" class="button button-secondary"><?php _e('Upload Logo', 'wc-email-verification'); ?></button>
+                                            <p class="description"><?php _e('Recommended size: 200x80 pixels or similar aspect ratio', 'wc-email-verification'); ?></p>
+                                        </div>
+                                    </div>
+                                    <p class="description"><?php _e('Upload a logo to display in the email header. Leave empty to show only text.', 'wc-email-verification'); ?></p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row"><?php _e('Logo Height', 'wc-email-verification'); ?></th>
+                                <td>
+                                    <input type="number" name="wc_email_verification_settings[email_logo_height]" value="<?php echo esc_attr($settings['email_logo_height'] ?? '60'); ?>" min="20" max="120" />
+                                    <span><?php _e('pixels', 'wc-email-verification'); ?></span>
+                                    <p class="description"><?php _e('Height of the logo in the email header (20-120 pixels)', 'wc-email-verification'); ?></p>
+                                </td>
+                            </tr>
+                        </table>
                         
                         <h4><?php _e('Email Colors', 'wc-email-verification'); ?></h4>
                         <table class="form-table">
@@ -557,6 +592,7 @@ class WC_Email_Verification_Admin {
     private function get_default_email_template() {
         return '<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: {background_color};">
     <div style="background: linear-gradient(135deg, {primary_color} 0%, {secondary_color} 100%); color: white; padding: 20px; text-align: center;">
+        {email_logo}
         <h1 style="margin: 0; font-size: 24px;">{header_title}</h1>
     </div>
     <div style="padding: 30px 20px; background: #ffffff;">

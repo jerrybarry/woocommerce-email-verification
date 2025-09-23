@@ -155,6 +155,43 @@
     display: inline-block;
 }
 
+/* Logo upload styles */
+.logo-upload-wrapper {
+    margin: 10px 0;
+}
+
+.logo-preview {
+    margin-bottom: 15px;
+}
+
+.logo-preview img {
+    border: 1px solid #ddd;
+    padding: 10px;
+    background: #fff;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.logo-actions {
+    margin-top: 10px;
+}
+
+.logo-actions .button {
+    margin-right: 10px;
+}
+
+.no-logo {
+    text-align: center;
+    padding: 20px;
+    border: 2px dashed #ddd;
+    border-radius: 4px;
+    background: #f9f9f9;
+}
+
+.no-logo .button {
+    margin-bottom: 10px;
+}
+
 .nav-tab-wrapper {
     background: #f1f1f1;
     border-bottom: 1px solid #ccd0d4;

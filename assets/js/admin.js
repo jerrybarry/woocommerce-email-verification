@@ -51,6 +51,17 @@
                 self.updateDesignerPreview();
             });
             
+            // Logo upload handlers
+            $('#upload-logo, #change-logo').on('click', function(e) {
+                e.preventDefault();
+                self.uploadLogo();
+            });
+            
+            $('#remove-logo').on('click', function(e) {
+                e.preventDefault();
+                self.removeLogo();
+            });
+            
             // Form validation
             $('form').on('submit', function() {
                 return self.validateForm();
@@ -338,8 +349,17 @@
         
         // Build email template from settings
         buildEmailTemplate: function(settings) {
+            var logoHtml = '';
+            var logoUrl = $('#email_logo_url').val();
+            var logoHeight = $('input[name*="email_logo_height"]').val() || '60';
+            
+            if (logoUrl) {
+                logoHtml = '<div style="margin-bottom: 15px;"><img src="' + logoUrl + '" alt="Logo" style="max-height: ' + logoHeight + 'px; width: auto; display: block; margin: 0 auto;" /></div>';
+            }
+            
             return '<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: ' + settings.background_color + ';">
     <div style="background: linear-gradient(135deg, ' + settings.primary_color + ' 0%, ' + settings.secondary_color + ' 100%); color: white; padding: 20px; text-align: center;">
+        ' + logoHtml + '
         <h1 style="margin: 0; font-size: 24px;">' + settings.header_title + '</h1>
     </div>
     <div style="padding: 30px 20px; background: #ffffff;">
@@ -384,6 +404,9 @@
                 return;
             }
             
+            var logoUrl = $('#email_logo_url').val();
+            var logoHeight = $('input[name*="email_logo_height"]').val() || '60';
+            
             var settings = {
                 primary_color: $('input[name*="email_primary_color"]').val() || '#0073aa',
                 secondary_color: $('input[name*="email_secondary_color"]').val() || '#005a87',
@@ -395,7 +418,9 @@
                 code_label: $('input[name*="email_code_label"]').val() || 'Your Verification Code:',
                 expiry_text: $('input[name*="email_expiry_text"]').val() || 'This code will expire in 10 minutes.',
                 security_notice: $('textarea[name*="email_security_notice"]').val() || 'Security notice text',
-                footer_text: $('textarea[name*="email_footer_text"]').val() || 'Best regards, The Your Site Team'
+                footer_text: $('textarea[name*="email_footer_text"]').val() || 'Best regards, The Your Site Team',
+                logo_url: logoUrl,
+                logo_height: logoHeight
             };
             
             var previewTemplate = this.buildEmailTemplate(settings);
@@ -409,6 +434,62 @@
             
             $previewContent.html('<div style="border: 1px solid #ddd; padding: 20px; background: white;">' + previewTemplate + '</div>');
             $preview.show();
+        },
+        
+        // Upload logo
+        uploadLogo: function() {
+            var self = this;
+            
+            // Check if wp.media is available
+            if (typeof wp === 'undefined' || !wp.media) {
+                alert('WordPress media library is not available. Please try refreshing the page.');
+                return;
+            }
+            
+            var mediaUploader = wp.media({
+                title: 'Select Logo',
+                button: {
+                    text: 'Use This Logo'
+                },
+                multiple: false,
+                library: {
+                    type: 'image'
+                }
+            });
+            
+            mediaUploader.on('select', function() {
+                var attachment = mediaUploader.state().get('selection').first().toJSON();
+                
+                // Update hidden fields
+                $('#email_logo_url').val(attachment.url);
+                $('#email_logo_id').val(attachment.id);
+                
+                // Update preview
+                $('#logo-preview img').attr('src', attachment.url);
+                $('#logo-preview').show();
+                $('#no-logo').hide();
+                
+                // Update live preview
+                self.updateDesignerPreview();
+            });
+            
+            mediaUploader.open();
+        },
+        
+        // Remove logo
+        removeLogo: function() {
+            if (confirm('Are you sure you want to remove the logo?')) {
+                // Clear hidden fields
+                $('#email_logo_url').val('');
+                $('#email_logo_id').val('');
+                
+                // Hide preview, show upload button
+                $('#logo-preview').hide();
+                $('#no-logo').show();
+                
+                // Update live preview
+                this.updateDesignerPreview();
+            }
         }
     };
 
