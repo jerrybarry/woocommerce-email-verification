@@ -43,6 +43,9 @@ class WC_Email_Verification_Ajax {
         
         // Get default email template
         add_action('wp_ajax_wc_get_default_email_template', array($this, 'get_default_email_template'));
+        
+        // Upload email logo (fallback)
+        add_action('wp_ajax_wc_upload_email_logo', array($this, 'upload_email_logo'));
     }
     
     /**
@@ -412,6 +415,73 @@ class WC_Email_Verification_Ajax {
         $default_template = WC_Email_Verification::get_instance()->get_default_email_template();
         
         wp_send_json_success(array('template' => $default_template));
+    }
+    
+    /**
+     * Upload email logo (fallback method)
+     */
+    public function upload_email_logo() {
+        // Check if user is admin
+        if (!current_user_can('manage_woocommerce')) {
+            wp_send_json_error(array('message' => __('Permission denied.', 'wc-email-verification')));
+        }
+        
+        // Verify nonce
+        if (!wp_verify_nonce($_POST['nonce'], 'wc_email_verification_test')) {
+            wp_send_json_error(array('message' => __('Security check failed.', 'wc-email-verification')));
+        }
+        
+        // Check if file was uploaded
+        if (!isset($_FILES['logo_file']) || $_FILES['logo_file']['error'] !== UPLOAD_ERR_OK) {
+            wp_send_json_error(array('message' => __('No file uploaded or upload error.', 'wc-email-verification')));
+        }
+        
+        // Check file type
+        $allowed_types = array('image/jpeg', 'image/png', 'image/gif', 'image/webp');
+        $file_type = wp_check_filetype($_FILES['logo_file']['name']);
+        
+        if (!in_array($file_type['type'], $allowed_types)) {
+            wp_send_json_error(array('message' => __('Invalid file type. Please upload an image file.', 'wc-email-verification')));
+        }
+        
+        // Check file size (2MB limit)
+        if ($_FILES['logo_file']['size'] > 2 * 1024 * 1024) {
+            wp_send_json_error(array('message' => __('File too large. Maximum size is 2MB.', 'wc-email-verification')));
+        }
+        
+        // Upload file using WordPress
+        require_once(ABSPATH . 'wp-admin/includes/file.php');
+        require_once(ABSPATH . 'wp-admin/includes/media.php');
+        require_once(ABSPATH . 'wp-admin/includes/image.php');
+        
+        $upload = wp_handle_upload($_FILES['logo_file'], array('test_form' => false));
+        
+        if (isset($upload['error'])) {
+            wp_send_json_error(array('message' => $upload['error']));
+        }
+        
+        // Create attachment
+        $attachment = array(
+            'post_mime_type' => $file_type['type'],
+            'post_title' => 'Email Logo - ' . sanitize_file_name($_FILES['logo_file']['name']),
+            'post_content' => '',
+            'post_status' => 'inherit'
+        );
+        
+        $attachment_id = wp_insert_attachment($attachment, $upload['file']);
+        
+        if (is_wp_error($attachment_id)) {
+            wp_send_json_error(array('message' => __('Failed to create attachment.', 'wc-email-verification')));
+        }
+        
+        // Generate attachment metadata
+        $attachment_data = wp_generate_attachment_metadata($attachment_id, $upload['file']);
+        wp_update_attachment_metadata($attachment_id, $attachment_data);
+        
+        wp_send_json_success(array(
+            'id' => $attachment_id,
+            'url' => $upload['url']
+        ));
     }
     
     /**

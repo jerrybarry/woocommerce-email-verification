@@ -92,6 +92,7 @@ class WC_Email_Verification_Admin {
         <div class="wrap">
             <h1><?php _e('WooCommerce Email Verification Settings', 'wc-email-verification'); ?></h1>
             
+            
             <div class="wc-email-verification-admin-header">
                 <div class="wc-email-verification-stats">
                     <div class="stat-box">
@@ -274,8 +275,15 @@ class WC_Email_Verification_Admin {
                                         </div>
                                         
                                         <div id="no-logo" class="no-logo" style="<?php echo !empty($settings['email_logo_url']) ? 'display: none;' : ''; ?>">
-                                            <button type="button" id="upload-logo" class="button button-secondary"><?php _e('Upload Logo', 'wc-email-verification'); ?></button>
-                                            <p class="description"><?php _e('Recommended size: 200x80 pixels or similar aspect ratio', 'wc-email-verification'); ?></p>
+                                            <input type="file" id="logo-file-input" accept="image/*" style="display: none;" />
+                                            <button type="button" id="upload-logo" class="button button-secondary"><?php _e('Choose Logo File', 'wc-email-verification'); ?></button>
+                                            <p class="description"><?php _e('Recommended size: 200x80 pixels or similar aspect ratio. Supported formats: JPG, PNG, GIF', 'wc-email-verification'); ?></p>
+                                            <div id="upload-progress" style="display: none; margin-top: 10px;">
+                                                <div style="background: #f0f0f0; border-radius: 3px; height: 20px;">
+                                                    <div id="progress-bar" style="background: #0073aa; height: 100%; width: 0%; border-radius: 3px; transition: width 0.3s;"></div>
+                                                </div>
+                                                <p id="upload-status" style="margin: 5px 0 0 0; font-size: 12px; color: #666;"></p>
+                                            </div>
                                         </div>
                                     </div>
                                     <p class="description"><?php _e('Upload a logo to display in the email header. Leave empty to show only text.', 'wc-email-verification'); ?></p>

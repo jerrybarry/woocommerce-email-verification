@@ -171,7 +171,6 @@ class WC_Email_Verification {
             
             // Enqueue WordPress editor scripts and styles for WYSIWYG
             wp_enqueue_editor();
-            wp_enqueue_media();
             
             wp_enqueue_script(
                 'wc-email-verification-admin',
@@ -180,6 +179,9 @@ class WC_Email_Verification {
                 WC_EMAIL_VERIFICATION_VERSION,
                 true
             );
+            
+            // Add inline script to ensure ajaxurl is available
+            wp_add_inline_script('wc-email-verification-admin', 'var ajaxurl = "' . admin_url('admin-ajax.php') . '";', 'before');
             
             wp_enqueue_style(
                 'wc-email-verification-admin',
