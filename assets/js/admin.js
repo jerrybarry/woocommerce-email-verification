@@ -51,24 +51,6 @@
                 self.updateDesignerPreview();
             });
             
-            // Logo upload handlers
-            $('#upload-logo, #change-logo').on('click', function(e) {
-                e.preventDefault();
-                $('#logo-file-input').click();
-            });
-            
-            // Handle file selection
-            $('#logo-file-input').on('change', function(e) {
-                var file = e.target.files[0];
-                if (file) {
-                    self.uploadLogoFile(file);
-                }
-            });
-            
-            $('#remove-logo').on('click', function(e) {
-                e.preventDefault();
-                self.removeLogo();
-            });
             
             
             // Form validation
@@ -441,120 +423,14 @@
             $preview.show();
         },
         
-        // Upload logo file
-        uploadLogoFile: function(file) {
-            var self = this;
-            
-            // Validate file type
-            if (!file.type.match('image.*')) {
-                alert('Please select an image file (JPG, PNG, GIF)');
-                return;
-            }
-            
-            // Validate file size (max 5MB)
-            if (file.size > 5 * 1024 * 1024) {
-                alert('File size must be less than 5MB');
-                return;
-            }
-            
-            // Show progress
-            $('#upload-progress').show();
-            $('#progress-bar').css('width', '0%');
-            $('#upload-status').text('Uploading...');
-            
-            // Create FormData
-            var formData = new FormData();
-            formData.append('action', 'wc_upload_email_logo');
-            formData.append('logo_file', file);
-            formData.append('nonce', $('#_wpnonce').val() || '');
-            
-            // Upload via AJAX
-            $.ajax({
-                url: ajaxurl,
-                type: 'POST',
-                data: formData,
-                processData: false,
-                contentType: false,
-                xhr: function() {
-                    var xhr = new window.XMLHttpRequest();
-                    xhr.upload.addEventListener("progress", function(evt) {
-                        if (evt.lengthComputable) {
-                            var percentComplete = (evt.loaded / evt.total) * 100;
-                            $('#progress-bar').css('width', percentComplete + '%');
-                            $('#upload-status').text('Uploading... ' + Math.round(percentComplete) + '%');
-                        }
-                    }, false);
-                    return xhr;
-                },
-                success: function(response) {
-                    $('#upload-progress').hide();
-                    if (response.success) {
-                        // Update hidden fields
-                        $('#email_logo_url').val(response.data.url);
-                        $('#email_logo_id').val(response.data.id);
-                        
-                        // Update preview
-                        $('#logo-preview img').attr('src', response.data.url);
-                        $('#logo-preview').show();
-                        $('#no-logo').hide();
-                        
-                        // Update live preview
-                        self.updateDesignerPreview();
-                        
-                        // Show success message
-                        self.showMessage('Logo uploaded successfully!', 'success', $('#upload-progress'));
-                    } else {
-                        alert('Upload failed: ' + (response.data.message || 'Unknown error'));
-                    }
-                },
-                error: function() {
-                    $('#upload-progress').hide();
-                    alert('Upload failed. Please try again.');
-                }
-            });
-        },
         
         
-        // Remove logo
-        removeLogo: function() {
-            if (confirm('Are you sure you want to remove the logo?')) {
-                // Clear hidden fields
-                $('#email_logo_url').val('');
-                $('#email_logo_id').val('');
-                
-                // Hide preview, show upload button
-                $('#logo-preview').hide();
-                $('#no-logo').show();
-                
-                // Update live preview
-                this.updateDesignerPreview();
-            }
-        }
     };
 
     // Initialize when document is ready
     $(document).ready(function() {
-        console.log('Admin script loaded');
-        console.log('jQuery available:', typeof $ !== 'undefined');
-        console.log('WCEmailVerificationAdmin object:', typeof WCEmailVerificationAdmin);
-        
-        // Basic test to see if jQuery is working
-        if (typeof $ !== 'undefined') {
-            console.log('jQuery version:', $.fn.jquery);
-            
-            // Test if our buttons exist
-            console.log('Upload logo button exists:', $('#upload-logo').length > 0);
-            console.log('Test upload button exists:', $('#test-upload').length > 0);
-        }
-        
-        try {
-            WCEmailVerificationAdmin.init();
-            WCEmailVerificationAdmin.initDependentSettings();
-            console.log('WCEmailVerificationAdmin initialized successfully');
-            
-        } catch (error) {
-            console.error('Error initializing WCEmailVerificationAdmin:', error);
-        }
+        WCEmailVerificationAdmin.init();
+        WCEmailVerificationAdmin.initDependentSettings();
         
         
         // Initialize WYSIWYG editor if it exists

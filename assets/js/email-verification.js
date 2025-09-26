@@ -189,8 +189,9 @@
         
         // Check if email is valid
         isValidEmail: function(email) {
+            if (!email || email.length < 5) return false;
             var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            return emailRegex.test(email);
+            return emailRegex.test(email) && email.length > 5;
         },
         
         // Reset verification state

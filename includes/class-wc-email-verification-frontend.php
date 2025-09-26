@@ -48,15 +48,15 @@ class WC_Email_Verification_Frontend {
                 return;
             }
             
-            if (WC_Email_Verification::get_instance()->get_setting('enabled', 'yes') !== 'yes') {
-                return;
-            }
-            
-            if (WC_Email_Verification::get_instance()->get_setting('checkout_required', 'yes') !== 'yes') {
-                return;
-            }
-            
-            $this->render_verification_section('checkout');
+        if (WC_Email_Verification::get_instance()->get_setting('enabled', 'yes') !== 'yes') {
+            return;
+        }
+        
+        if (WC_Email_Verification::get_instance()->get_setting('checkout_required', 'yes') !== 'yes') {
+            return;
+        }
+        
+        $this->render_verification_section('checkout');
         } catch (Exception $e) {
             error_log('WC Email Verification Frontend Error: ' . $e->getMessage());
         }
@@ -69,7 +69,7 @@ class WC_Email_Verification_Frontend {
             $(document).on('input keyup change blur paste', '#billing_email', function() {
                 var email = $(this).val().trim();
                 
-                if (email && email.includes('@') && email.includes('.')) {
+                if (email && email.includes('@') && email.includes('.') && email.length > 5) {
                     $('#wc-email-verification-wrapper').addClass('show');
                     $('#wc-email-verification-trigger').show();
                     
@@ -77,6 +77,7 @@ class WC_Email_Verification_Frontend {
                     checkEmailVerificationStatus(email);
                 } else {
                     $('#wc-email-verification-wrapper').removeClass('show');
+                    $('#wc-email-verification-trigger').hide();
                 }
             });
             
@@ -125,15 +126,15 @@ class WC_Email_Verification_Frontend {
                 return;
             }
             
-            if (WC_Email_Verification::get_instance()->get_setting('enabled', 'yes') !== 'yes') {
-                return;
-            }
-            
-            if (WC_Email_Verification::get_instance()->get_setting('registration_required', 'yes') !== 'yes') {
-                return;
-            }
-            
-            $this->render_verification_section('registration');
+        if (WC_Email_Verification::get_instance()->get_setting('enabled', 'yes') !== 'yes') {
+            return;
+        }
+        
+        if (WC_Email_Verification::get_instance()->get_setting('registration_required', 'yes') !== 'yes') {
+            return;
+        }
+        
+        $this->render_verification_section('registration');
         } catch (Exception $e) {
             error_log('WC Email Verification Frontend Error: ' . $e->getMessage());
         }
@@ -146,11 +147,12 @@ class WC_Email_Verification_Frontend {
             $(document).on('input keyup change blur paste', '#reg_email', function() {
                 var email = $(this).val().trim();
                 
-                if (email && email.includes('@') && email.includes('.')) {
+                if (email && email.includes('@') && email.includes('.') && email.length > 5) {
                     $('#wc-email-verification-wrapper').addClass('show');
                     $('#wc-email-verification-trigger').show();
                 } else {
                     $('#wc-email-verification-wrapper').removeClass('show');
+                    $('#wc-email-verification-trigger').hide();
                 }
             });
             
@@ -159,7 +161,7 @@ class WC_Email_Verification_Frontend {
             
             // Check if email is already verified on page load
             var currentEmail = $('#reg_email').val().trim();
-            if (currentEmail && currentEmail.includes('@') && currentEmail.includes('.')) {
+            if (currentEmail && currentEmail.includes('@') && currentEmail.includes('.') && currentEmail.length > 5) {
                 // Check if this email is already verified
                 checkEmailVerificationStatus(currentEmail);
             }
@@ -285,23 +287,23 @@ class WC_Email_Verification_Frontend {
                             <p><?php printf(__('We sent a %d-digit verification code to your email address', 'wc-email-verification'), $code_length); ?></p>
                             
                             <div class="wc-verification-code-input-wrapper">
-                                <input type="text" 
-                                       id="wc-verification-code" 
-                                       name="verification_code" 
-                                       maxlength="<?php echo esc_attr($code_length); ?>" 
-                                       placeholder="<?php echo str_repeat('0', $code_length); ?>"
-                                       class="wc-verification-code-input"
-                                       autocomplete="one-time-code" />
+                    <input type="text" 
+                           id="wc-verification-code" 
+                           name="verification_code" 
+                           maxlength="<?php echo esc_attr($code_length); ?>" 
+                           placeholder="<?php echo str_repeat('0', $code_length); ?>"
+                           class="wc-verification-code-input"
+                           autocomplete="one-time-code" />
                                 <button type="button" id="wc-verify-code-btn" class="button wc-email-verification-btn"><?php _e('Verify Code', 'wc-email-verification'); ?></button>
-                            </div>
-                            
+                </div>
+                
                             <div class="wc-verification-code-actions">
-                                <button type="button" id="wc-resend-verification-btn" class="button-link">
-                                    <?php _e('Resend Code', 'wc-email-verification'); ?>
-                                </button>
-                                <span class="wc-email-verification-timer" id="wc-verification-timer" style="display: none;">
-                                    <?php printf(__('Resend available in %s', 'wc-email-verification'), '<span id="wc-timer-countdown">60</span>s'); ?>
-                                </span>
+                    <button type="button" id="wc-resend-verification-btn" class="button-link">
+                        <?php _e('Resend Code', 'wc-email-verification'); ?>
+                    </button>
+                    <span class="wc-email-verification-timer" id="wc-verification-timer" style="display: none;">
+                        <?php printf(__('Resend available in %s', 'wc-email-verification'), '<span id="wc-timer-countdown">60</span>s'); ?>
+                    </span>
                             </div>
                             
                             <div class="wc-verification-back-action">
@@ -309,9 +311,9 @@ class WC_Email_Verification_Frontend {
                                     <?php _e('← Back to email verification', 'wc-email-verification'); ?>
                                 </button>
                             </div>
-                        </div>
-                    </div>
-                    
+                </div>
+            </div>
+            
                     <!-- Step 3: Success -->
                     <div id="wc-verification-step-3" class="wc-verification-step">
                         <div class="wc-verification-step-content">
