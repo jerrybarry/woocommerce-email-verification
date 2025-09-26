@@ -3,7 +3,7 @@
  * Plugin Name: WooCommerce Email Verification
  * Plugin URI: https://github.com/jerrybarry/woocommerce-email-verification
  * Description: Adds email verification functionality to WooCommerce checkout and registration processes.
- * Version: 1.2.2
+ * Version: 1.3.0
  * Author: Jerry Barry
  * Author URI: https://github.com/jerrybarry
  * Text Domain: wc-email-verification

@@ -75,8 +75,23 @@ class WC_Email_Verification_Ajax {
             $record = WC_Email_Verification_Database::get_verification_record($email);
             if ($record && $record->verified == 1) {
                 // Mark as verified in session
-                $_SESSION[$verification_key] = true;
+                if (function_exists('wc_woo_email_verification_session_available') && wc_woo_email_verification_session_available()) {
+                    $_SESSION[$verification_key] = true;
+                }
                 throw new Exception(__('This email address has already been verified.', 'wc-email-verification'));
+            }
+            
+            // Check if this email belongs to an existing user and if they're already verified
+            $user = get_user_by('email', $email);
+            if ($user && $user->ID) {
+                $is_user_verified = get_user_meta($user->ID, 'wc_email_verified', true);
+                if ($is_user_verified) {
+                    // Mark as verified in session
+                    if (function_exists('wc_woo_email_verification_session_available') && wc_woo_email_verification_session_available()) {
+                        $_SESSION[$verification_key] = true;
+                    }
+                    throw new Exception(__('This email address has already been verified.', 'wc-email-verification'));
+                }
             }
             
             // Check rate limiting
@@ -159,6 +174,30 @@ class WC_Email_Verification_Ajax {
                 throw new Exception(__('Invalid email or verification code.', 'wc-email-verification'));
             }
             
+            // Check if email is already verified
+            // Session should already be started by the main plugin file
+            if (function_exists('wc_woo_email_verification_session_available') && wc_woo_email_verification_session_available()) {
+                $verification_key = 'wc_email_verified_' . md5($email);
+                if (isset($_SESSION[$verification_key]) && $_SESSION[$verification_key]) {
+                    throw new Exception(__('This email address has already been verified.', 'wc-email-verification'));
+                }
+            }
+            
+            // Check database for recent verification
+            $existing_record = WC_Email_Verification_Database::get_verification_record($email);
+            if ($existing_record && $existing_record->verified == 1) {
+                throw new Exception(__('This email address has already been verified.', 'wc-email-verification'));
+            }
+            
+            // Check if this email belongs to an existing user and if they're already verified
+            $user = get_user_by('email', $email);
+            if ($user && $user->ID) {
+                $is_user_verified = get_user_meta($user->ID, 'wc_email_verified', true);
+                if ($is_user_verified) {
+                    throw new Exception(__('This email address has already been verified.', 'wc-email-verification'));
+                }
+            }
+            
             // Check rate limiting
             $identifier = $this->get_client_ip() . '_' . $email;
             $rate_limit = WC_Email_Verification::get_instance()->get_setting('rate_limit', 5);
@@ -237,11 +276,34 @@ class WC_Email_Verification_Ajax {
                 throw new Exception(__('Please enter a valid email address.', 'wc-email-verification'));
             }
             
+            // Check if email is already verified
+            // Session should already be started by the main plugin file
+            if (function_exists('wc_woo_email_verification_session_available') && wc_woo_email_verification_session_available()) {
+                $verification_key = 'wc_email_verified_' . md5($email);
+                if (isset($_SESSION[$verification_key]) && $_SESSION[$verification_key]) {
+                    throw new Exception(__('This email address has already been verified.', 'wc-email-verification'));
+                }
+            }
+            
+            // Check if this email belongs to an existing user and if they're already verified
+            $user = get_user_by('email', $email);
+            if ($user && $user->ID) {
+                $is_user_verified = get_user_meta($user->ID, 'wc_email_verified', true);
+                if ($is_user_verified) {
+                    throw new Exception(__('This email address has already been verified.', 'wc-email-verification'));
+                }
+            }
+
             // Check if there's an existing unverified record
             $existing_record = WC_Email_Verification_Database::get_verification_record($email);
             
             if (!$existing_record) {
                 throw new Exception(__('No pending verification found for this email.', 'wc-email-verification'));
+            }
+            
+            // Double check the existing record is not already verified
+            if ($existing_record && $existing_record->verified == 1) {
+                throw new Exception(__('This email address has already been verified.', 'wc-email-verification'));
             }
             
             // Check rate limiting for resend
@@ -325,10 +387,18 @@ class WC_Email_Verification_Ajax {
                 $is_verified = isset($_SESSION[$verification_key]) && $_SESSION[$verification_key];
             }
             
-            // Also check database for recent verification
+            // Check database for recent verification
             if (!$is_verified) {
                 $record = WC_Email_Verification_Database::get_verification_record($email);
                 $is_verified = $record && $record->verified == 1;
+            }
+            
+            // Also check if this email belongs to an existing user and if they're verified
+            if (!$is_verified) {
+                $user = get_user_by('email', $email);
+                if ($user && $user->ID) {
+                    $is_verified = (bool) get_user_meta($user->ID, 'wc_email_verified', true);
+                }
             }
             
             wp_send_json_success(array(
