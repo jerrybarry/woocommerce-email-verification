@@ -103,10 +103,6 @@ class WC_Email_Verification_Admin {
                         <h3><?php echo esc_html($stats['pending_verifications']); ?></h3>
                         <p><?php _e('Pending Verifications', 'wc-email-verification'); ?></p>
                     </div>
-                    <div class="stat-box">
-                        <h3><?php echo esc_html($stats['success_rate']); ?>%</h3>
-                        <p><?php _e('Success Rate', 'wc-email-verification'); ?></p>
-                    </div>
                 </div>
             </div>
             

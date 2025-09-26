@@ -438,6 +438,9 @@
                         self.state.emailVerified = true;
                         $('#wc-email-verification-wrapper').addClass('show');
                         
+                        // Hide verification trigger if user is verified
+                        $('#wc-email-verification-trigger').hide();
+                        
                         // If popup is open, show success step
                         if ($('#wc-email-verification-popup').is(':visible')) {
                             self.goToStep(3);
@@ -445,6 +448,11 @@
                         }
                         
                         self.showSuccessState();
+                        self.updateSubmitButtonState();
+                    } else {
+                        // Not verified, show the trigger
+                        self.state.emailVerified = false;
+                        $('#wc-email-verification-trigger').show();
                         self.updateSubmitButtonState();
                     }
                 },

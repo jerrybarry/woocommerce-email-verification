@@ -61,6 +61,9 @@ class WC_Email_Verification {
         
         // Check for plugin updates
         add_action('init', array($this, 'check_version'));
+        
+        // Block login for unverified users
+        add_filter('wp_authenticate_user', array($this, 'check_user_verification_on_login'), 10, 2);
     }
     
     /**
@@ -365,5 +368,51 @@ class WC_Email_Verification {
         <p style="margin: 0; color: #6c757d; font-size: 12px;">This email was sent from {site_name} | <a href="{site_url}" style="color: {primary_color};">Visit our website</a></p>
     </div>
 </div>';
+    }
+    
+    /**
+     * Check user verification status on login
+     *
+     * @param WP_User $user
+     * @param string $password
+     * @return WP_User|WP_Error
+     */
+    public function check_user_verification_on_login($user, $password) {
+        // Skip verification check for admin users
+        if (is_wp_error($user) || $user->ID === 0) {
+            return $user;
+        }
+        
+        // Skip check if plugin is disabled
+        if ($this->get_setting('enabled', 'yes') !== 'yes') {
+            return $user;
+        }
+        
+        // Only check for regular users, not admin users with manage_options capability  
+        if (user_can($user, 'manage_options')) {
+            return $user;
+        }
+        
+        // Get verification status from user meta
+        $is_verified = get_user_meta($user->ID, 'wc_email_verified', true);
+        
+        // If user is not verified, deny login
+        if (!$is_verified) {
+            // Allow temporary bypass during verification
+            // Also allow admins to bypass this if they have certain capabilities
+            
+            // Create WP_Error with custom message
+            $error = new WP_Error(
+                'email_not_verified',
+                sprintf(
+                    __('Your email address has not been verified. Please check your inbox for the verification email or contact support. %s', 'wc-email-verification'),
+                    '<a href="' . wp_lostpassword_url() . '">' . __('Reset your password', 'wc-email-verification') . '</a>'
+                )
+            );
+            
+            return $error;
+        }
+        
+        return $user;
     }
 }
