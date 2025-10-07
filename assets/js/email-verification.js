@@ -22,7 +22,9 @@
             emailVerified: false,
             currentEmail: '',
             verificationTimer: null,
-            resendCooldown: 60 // seconds
+            resendCooldown: 60, // seconds
+            lastVerifiedEmail: '',
+            isVerificationPermanent: false // Track if verification should stay hidden
         },
         
         // Initialize
@@ -156,8 +158,13 @@
             
             if (email !== this.state.currentEmail) {
                 this.state.currentEmail = email;
-                this.state.emailVerified = false;
-                this.resetVerificationState();
+                
+                // Reset verification state only if email changed from last verified email
+                if (email !== this.state.lastVerifiedEmail) {
+                    this.state.emailVerified = false;
+                    this.state.isVerificationPermanent = false;
+                    this.resetVerificationState();
+                }
                 
                 // Check if email is already verified
                 if (email && this.isValidEmail(email)) {
@@ -173,7 +180,13 @@
             var email = this.getCurrentEmail();
             var isValidEmail = this.isValidEmail(email);
             
-            if (isValidEmail) {
+            // Don't show verification if email is permanently verified
+            if (this.state.isVerificationPermanent && email === this.state.lastVerifiedEmail) {
+                $('#wc-email-verification-wrapper').removeClass('show').hide();
+                $('#wc-email-verification-trigger').hide();
+                $('#wc-email-verification-code-section').hide();
+                this.clearMessages();
+            } else if (isValidEmail) {
                 $('#wc-email-verification-wrapper').addClass('show');
                 $('#wc-email-verification-trigger').show();
             } else {
@@ -330,9 +343,11 @@
         
         // Show success state
         showSuccessState: function() {
+            // Hide the entire verification wrapper when email is verified
+            $('#wc-email-verification-wrapper').removeClass('show').hide();
             $('#wc-email-verification-trigger').hide();
             $('#wc-email-verification-code-section').hide();
-            $('#wc-email-verification-success').show();
+            $('#wc-email-verification-success').hide();
             this.clearMessages();
             
             // Enable submit button
@@ -434,9 +449,11 @@
                 },
                 success: function(response) {
                     if (response.success && response.data.verified) {
-                        // Email is already verified
+                        // Email is already verified - hide entire verification wrapper permanently
                         self.state.emailVerified = true;
-                        $('#wc-email-verification-wrapper').addClass('show');
+                        self.state.lastVerifiedEmail = email;
+                        self.state.isVerificationPermanent = true;
+                        $('#wc-email-verification-wrapper').removeClass('show').hide();
                         
                         // Hide verification trigger if user is verified
                         $('#wc-email-verification-trigger').hide();
@@ -452,7 +469,11 @@
                     } else {
                         // Not verified, show the trigger
                         self.state.emailVerified = false;
+                        self.state.lastVerifiedEmail = '';
+                        self.state.isVerificationPermanent = false;
+                        $('#wc-email-verification-wrapper').addClass('show').show();
                         $('#wc-email-verification-trigger').show();
+                        $('#wc-email-verification-success').hide();
                         self.updateSubmitButtonState();
                     }
                 },

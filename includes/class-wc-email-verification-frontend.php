@@ -25,8 +25,8 @@ class WC_Email_Verification_Frontend {
         // Add verification to checkout
         add_action('woocommerce_checkout_billing', array($this, 'add_checkout_verification'), 25);
         
-        // Add verification to registration - after email field but before reCAPTCHA
-        add_action('woocommerce_register_form', array($this, 'add_registration_verification'), 5);
+        // Add verification to registration - after password field but before reCAPTCHA
+        add_action('woocommerce_register_form', array($this, 'add_registration_verification'), 15);
         
         // Validate checkout
         add_action('woocommerce_checkout_process', array($this, 'validate_checkout_verification'));
@@ -148,27 +148,50 @@ class WC_Email_Verification_Frontend {
         ?>
         <script type="text/javascript">
         jQuery(document).ready(function($) {
-            // Move verification container above reCAPTCHA
-            var verificationWrapper = $('#wc-email-verification-wrapper');
-            var recaptchaElement = $('.g-recaptcha');
+            // Track verification state
+            var isEmailVerified = false;
+            var lastVerifiedEmail = '';
             
-            if (verificationWrapper.length && recaptchaElement.length) {
-                // Move verification wrapper before reCAPTCHA
-                verificationWrapper.insertBefore(recaptchaElement);
-            }
+            // Move verification container above reCAPTCHA with a delay to ensure DOM is ready
+            setTimeout(function() {
+                var verificationWrapper = $('#wc-email-verification-wrapper');
+                var recaptchaElement = $('.g-recaptcha');
+                
+                if (verificationWrapper.length && recaptchaElement.length) {
+                    // Move verification wrapper before reCAPTCHA
+                    verificationWrapper.insertBefore(recaptchaElement);
+                }
+            }, 100);
             
             // Monitor email field
             $(document).on('input keyup change blur paste', '#reg_email', function() {
                 var email = $(this).val().trim();
+                
+                // Reset verification state if email changed
+                if (email !== lastVerifiedEmail) {
+                    isEmailVerified = false;
+                    lastVerifiedEmail = '';
+                }
                 
                 if (email && email.includes('@') && email.includes('.') && email.length > 5) {
                     // Check if already verified first
                     checkEmailVerificationStatus(email);
                 } else {
                     // Hide everything if email is invalid
-                    $('#wc-email-verification-wrapper').removeClass('show');
+                    $('#wc-email-verification-wrapper').removeClass('show').hide();
                     $('#wc-email-verification-trigger').hide();
                     $('#wc-email-verification-success').hide();
+                    // Disable register button
+                    $('button[type="submit"][name="register"]').prop('disabled', true).addClass('disabled');
+                    isEmailVerified = false;
+                }
+            });
+            
+            // Monitor other form fields to prevent verification container from reappearing
+            $(document).on('focus blur click', '#reg_password, .g-recaptcha, button[name="register"]', function() {
+                // Only prevent showing if current email is verified
+                if (isEmailVerified && lastVerifiedEmail) {
+                    $('#wc-email-verification-wrapper').removeClass('show').hide();
                 }
             });
             
@@ -194,28 +217,37 @@ class WC_Email_Verification_Frontend {
                 },
                 success: function(response) {
                     if (response.success && response.data.verified) {
-                        // Email is already verified, show success state and hide trigger
-                        jQuery('#wc-email-verification-wrapper').addClass('show');
+                        // Email is already verified - HIDE the entire verification wrapper
+                        jQuery('#wc-email-verification-wrapper').removeClass('show').hide();
                         jQuery('#wc-email-verification-trigger').hide();
                         jQuery('#wc-email-verification-code-section').hide();
-                        jQuery('#wc-email-verification-success').show();
+                        jQuery('#wc-email-verification-success').hide();
                         
                         // Enable register button
                         jQuery('button[type="submit"][name="register"]').prop('disabled', false).removeClass('disabled');
                         
-                        // Set verification state
+                        // Set verification state variables
+                        isEmailVerified = true;
+                        lastVerifiedEmail = email;
+                        
+                        // Set verification state in main object
                         if (typeof WCEmailVerification !== 'undefined') {
                             WCEmailVerification.state.emailVerified = true;
                         }
                     } else {
-                        // Email is not verified, show trigger and hide success
+                        // Email is not verified, show verification wrapper and trigger
+                        jQuery('#wc-email-verification-wrapper').addClass('show').show();
                         jQuery('#wc-email-verification-trigger').show();
                         jQuery('#wc-email-verification-success').hide();
                         
                         // Disable register button
                         jQuery('button[type="submit"][name="register"]').prop('disabled', true).addClass('disabled');
                         
-                        // Set verification state
+                        // Reset verification state variables
+                        isEmailVerified = false;
+                        lastVerifiedEmail = '';
+                        
+                        // Set verification state in main object
                         if (typeof WCEmailVerification !== 'undefined') {
                             WCEmailVerification.state.emailVerified = false;
                         }

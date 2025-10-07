@@ -14,6 +14,12 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     display: none !important; /* Initially hidden */
     clear: both; /* Ensure proper positioning */
+    position: relative; /* Help with positioning */
+}
+
+/* Ensure verification appears above reCAPTCHA */
+.g-recaptcha {
+    margin-top: 20px !important;
 }
 
 /* Show when needed */
