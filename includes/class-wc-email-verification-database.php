@@ -260,6 +260,27 @@ class WC_Email_Verification_Database {
     }
     
     /**
+     * Update verification email address
+     *
+     * @param string $old_email
+     * @param string $new_email
+     * @return int|false
+     */
+    public static function update_verification_email($old_email, $new_email) {
+        global $wpdb;
+        
+        $table_name = $wpdb->prefix . 'wc_email_verifications';
+        
+        return $wpdb->update(
+            $table_name,
+            array('email' => $new_email),
+            array('email' => $old_email),
+            array('%s'),
+            array('%s')
+        );
+    }
+    
+    /**
      * Log verification action
      *
      * @param string $email

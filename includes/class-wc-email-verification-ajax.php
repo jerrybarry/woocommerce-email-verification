@@ -92,6 +92,24 @@ class WC_Email_Verification_Ajax {
                     }
                     throw new Exception(__('This email address has already been verified.', 'wc-email-verification'));
                 }
+            } else {
+                // Email doesn't belong to a current user, check if it was verified before
+                // This handles the case where a user was deleted but verification data remains
+                global $wpdb;
+                $verified_record = $wpdb->get_row($wpdb->prepare(
+                    "SELECT * FROM {$wpdb->prefix}wc_email_verifications 
+                     WHERE email = %s AND verified = 1 
+                     ORDER BY verified_at DESC LIMIT 1",
+                    $email
+                ));
+                
+                if ($verified_record) {
+                    // This email was previously verified, mark as verified in session
+                    if (function_exists('wc_woo_email_verification_session_available') && wc_woo_email_verification_session_available()) {
+                        $_SESSION[$verification_key] = true;
+                    }
+                    throw new Exception(__('This email address has already been verified.', 'wc-email-verification'));
+                }
             }
             
             // Check rate limiting
@@ -196,6 +214,19 @@ class WC_Email_Verification_Ajax {
                 if ($is_user_verified) {
                     throw new Exception(__('This email address has already been verified.', 'wc-email-verification'));
                 }
+            } else {
+                // Email doesn't belong to a current user, check if it was verified before
+                global $wpdb;
+                $verified_record = $wpdb->get_row($wpdb->prepare(
+                    "SELECT * FROM {$wpdb->prefix}wc_email_verifications 
+                     WHERE email = %s AND verified = 1 
+                     ORDER BY verified_at DESC LIMIT 1",
+                    $email
+                ));
+                
+                if ($verified_record) {
+                    throw new Exception(__('This email address has already been verified.', 'wc-email-verification'));
+                }
             }
             
             // Check rate limiting
@@ -237,9 +268,17 @@ class WC_Email_Verification_Ajax {
                 $_SESSION['wc_email_verified_' . md5($email)] = true;
             }
             
+            // Update WordPress user meta if user exists
+            $user = get_user_by('email', $email);
+            if ($user && $user->ID) {
+                update_user_meta($user->ID, 'wc_email_verified', true);
+                update_user_meta($user->ID, 'wc_email_verified_date', current_time('mysql'));
+            }
+            
             // Log action
             WC_Email_Verification_Database::log_action($email, 'code_verified', array(
-                'attempts' => $record->attempts + 1
+                'attempts' => $record->attempts + 1,
+                'user_id' => $user ? $user->ID : null
             ));
             
             wp_send_json_success(array(
@@ -290,6 +329,19 @@ class WC_Email_Verification_Ajax {
             if ($user && $user->ID) {
                 $is_user_verified = get_user_meta($user->ID, 'wc_email_verified', true);
                 if ($is_user_verified) {
+                    throw new Exception(__('This email address has already been verified.', 'wc-email-verification'));
+                }
+            } else {
+                // Email doesn't belong to a current user, check if it was verified before
+                global $wpdb;
+                $verified_record = $wpdb->get_row($wpdb->prepare(
+                    "SELECT * FROM {$wpdb->prefix}wc_email_verifications 
+                     WHERE email = %s AND verified = 1 
+                     ORDER BY verified_at DESC LIMIT 1",
+                    $email
+                ));
+                
+                if ($verified_record) {
                     throw new Exception(__('This email address has already been verified.', 'wc-email-verification'));
                 }
             }
@@ -398,6 +450,20 @@ class WC_Email_Verification_Ajax {
                 $user = get_user_by('email', $email);
                 if ($user && $user->ID) {
                     $is_verified = (bool) get_user_meta($user->ID, 'wc_email_verified', true);
+                } else {
+                    // Email doesn't belong to a current user, check if it was verified before
+                    // This handles the case where a user was deleted but verification data remains
+                    global $wpdb;
+                    $verified_record = $wpdb->get_row($wpdb->prepare(
+                        "SELECT * FROM {$wpdb->prefix}wc_email_verifications 
+                         WHERE email = %s AND verified = 1 
+                         ORDER BY verified_at DESC LIMIT 1",
+                        $email
+                    ));
+                    
+                    if ($verified_record) {
+                        $is_verified = true;
+                    }
                 }
             }
             
