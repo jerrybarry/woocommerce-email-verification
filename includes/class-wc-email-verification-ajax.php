@@ -81,7 +81,7 @@ class WC_Email_Verification_Ajax {
                 throw new Exception(__('This email address has already been verified.', 'wc-email-verification'));
             }
             
-            // Check if this email belongs to an existing user and if they're already verified
+            // Check if this email belongs to an existing user
             $user = get_user_by('email', $email);
             if ($user && $user->ID) {
                 $is_user_verified = get_user_meta($user->ID, 'wc_email_verified', true);
@@ -91,6 +91,9 @@ class WC_Email_Verification_Ajax {
                         $_SESSION[$verification_key] = true;
                     }
                     throw new Exception(__('This email address has already been verified.', 'wc-email-verification'));
+                } else {
+                    // User exists but not verified - allow OTP request
+                    // This is normal flow for existing unverified users
                 }
             } else {
                 // Email doesn't belong to a current user, check if it was verified before
@@ -162,15 +165,34 @@ class WC_Email_Verification_Ajax {
             ));
             
         } catch (Exception $e) {
-            // Log error
+            // Log error with more details for debugging
             WC_Email_Verification_Database::log_action(
                 isset($email) ? $email : '',
                 'send_code_error',
-                array('error' => $e->getMessage())
+                array(
+                    'error' => $e->getMessage(),
+                    'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? '',
+                    'ip' => $this->get_client_ip(),
+                    'timestamp' => current_time('mysql'),
+                    'request_data' => array(
+                        'email_provided' => !empty($_POST['email']),
+                        'nonce_provided' => !empty($_POST['nonce'])
+                    )
+                )
             );
             
+            // Return appropriate error message
+            $error_message = $e->getMessage();
+            
+            // For production, don't expose internal errors
+            if (defined('WP_DEBUG') && !WP_DEBUG) {
+                if (strpos($error_message, 'Database error') !== false) {
+                    $error_message = __('A system error occurred. Please try again later.', 'wc-email-verification');
+                }
+            }
+            
             wp_send_json_error(array(
-                'message' => $e->getMessage()
+                'message' => $error_message
             ));
         }
     }
@@ -488,25 +510,30 @@ class WC_Email_Verification_Ajax {
             wp_send_json_error(array('message' => __('Permission denied.', 'wc-email-verification')));
         }
         
-        // Verify nonce
-        if (!wp_verify_nonce($_POST['nonce'], 'wc_email_verification_test')) {
-            wp_send_json_error(array('message' => __('Security check failed.', 'wc-email-verification')));
-        }
-        
-        $email = sanitize_email($_POST['email']);
-        
-        if (!is_email($email)) {
-            wp_send_json_error(array('message' => __('Please enter a valid email address.', 'wc-email-verification')));
-        }
-        
-        // Send test email
-        $email_handler = new WC_Email_Verification_Email();
-        $sent = $email_handler->send_test_email($email);
-        
-        if ($sent) {
-            wp_send_json_success(array('message' => __('Test email sent successfully!', 'wc-email-verification')));
-        } else {
-            wp_send_json_error(array('message' => __('Failed to send test email.', 'wc-email-verification')));
+        try {
+            $test_email = sanitize_email($_POST['email']);
+            $test_code = '123456';
+            
+            if (!is_email($test_email)) {
+                throw new Exception(__('Please enter a valid email address.', 'wc-email-verification'));
+            }
+            
+            // Send test email
+            $email_handler = new WC_Email_Verification_Email();
+            $email_sent = $email_handler->send_verification_email($test_email, $test_code, 15);
+            
+            if ($email_sent) {
+                wp_send_json_success(array(
+                    'message' => __('Test email sent successfully!', 'wc-email-verification')
+                ));
+            } else {
+                throw new Exception(__('Failed to send test email. Check your email configuration.', 'wc-email-verification'));
+            }
+            
+        } catch (Exception $e) {
+            wp_send_json_error(array(
+                'message' => $e->getMessage()
+            ));
         }
     }
     

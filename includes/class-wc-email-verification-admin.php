@@ -86,25 +86,12 @@ class WC_Email_Verification_Admin {
      */
     public function admin_page() {
         $settings = WC_Email_Verification::get_instance()->get_settings();
-        $stats = $this->get_verification_stats();
         
         ?>
         <div class="wrap">
             <h1><?php _e('WooCommerce Email Verification Settings', 'wc-email-verification'); ?></h1>
             
             
-            <div class="wc-email-verification-admin-header">
-                <div class="wc-email-verification-stats">
-                    <div class="stat-box">
-                        <h3><?php echo esc_html($stats['total_verifications']); ?></h3>
-                        <p><?php _e('Total Verifications', 'wc-email-verification'); ?></p>
-                    </div>
-                    <div class="stat-box">
-                        <h3><?php echo esc_html($stats['pending_verifications']); ?></h3>
-                        <p><?php _e('Pending Verifications', 'wc-email-verification'); ?></p>
-                    </div>
-                </div>
-            </div>
             
             <form method="post" action="options.php">
                 <?php settings_fields('wc_email_verification_settings'); ?>
@@ -483,29 +470,6 @@ class WC_Email_Verification_Admin {
         return $sanitized;
     }
     
-    /**
-     * Get verification statistics
-     *
-     * @return array
-     */
-    private function get_verification_stats() {
-        global $wpdb;
-        
-        $table_name = $wpdb->prefix . 'wc_email_verifications';
-        
-        $total = $wpdb->get_var("SELECT COUNT(*) FROM $table_name");
-        $verified = $wpdb->get_var("SELECT COUNT(*) FROM $table_name WHERE verified = 1");
-        $pending = $wpdb->get_var("SELECT COUNT(*) FROM $table_name WHERE verified = 0 AND expires_at > NOW()");
-        
-        $success_rate = $total > 0 ? round(($verified / $total) * 100, 1) : 0;
-        
-        return array(
-            'total_verifications' => $total,
-            'verified_verifications' => $verified,
-            'pending_verifications' => $pending,
-            'success_rate' => $success_rate
-        );
-    }
     
     /**
      * Display verification logs

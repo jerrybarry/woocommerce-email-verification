@@ -69,7 +69,16 @@ class WC_Email_Verification_Email {
             // Log successful email send
             WC_Email_Verification_Database::log_action($email, 'email_sent', array(
                 'subject' => $subject,
-                'expiry_minutes' => $expiry_minutes
+                'expiry_minutes' => $expiry_minutes,
+                'method' => class_exists('WC_Emails') ? 'woocommerce' : 'wp_mail'
+            ));
+        } else {
+            // Log failed email send
+            WC_Email_Verification_Database::log_action($email, 'email_failed', array(
+                'subject' => $subject,
+                'expiry_minutes' => $expiry_minutes,
+                'method' => class_exists('WC_Emails') ? 'woocommerce' : 'wp_mail',
+                'error' => 'wp_mail returned false'
             ));
         }
         
