@@ -25,8 +25,8 @@ class WC_Email_Verification_Frontend {
         // Add verification to checkout
         add_action('woocommerce_checkout_billing', array($this, 'add_checkout_verification'), 25);
         
-        // Add verification to registration
-        add_action('woocommerce_register_form', array($this, 'add_registration_verification'));
+        // Add verification to registration - after email field but before reCAPTCHA
+        add_action('woocommerce_register_form', array($this, 'add_registration_verification'), 5);
         
         // Validate checkout
         add_action('woocommerce_checkout_process', array($this, 'validate_checkout_verification'));
@@ -148,24 +148,27 @@ class WC_Email_Verification_Frontend {
         ?>
         <script type="text/javascript">
         jQuery(document).ready(function($) {
+            // Move verification container above reCAPTCHA
+            var verificationWrapper = $('#wc-email-verification-wrapper');
+            var recaptchaElement = $('.g-recaptcha');
+            
+            if (verificationWrapper.length && recaptchaElement.length) {
+                // Move verification wrapper before reCAPTCHA
+                verificationWrapper.insertBefore(recaptchaElement);
+            }
+            
             // Monitor email field
             $(document).on('input keyup change blur paste', '#reg_email', function() {
                 var email = $(this).val().trim();
                 
                 if (email && email.includes('@') && email.includes('.') && email.length > 5) {
-                    // First check if already verified, don't show trigger if verified
+                    // Check if already verified first
                     checkEmailVerificationStatus(email);
-                    
-                    // Only show trigger if not verified after check
-                    setTimeout(function() {
-                        if (!jQuery('#wc-email-verification-success').is(':visible')) {
-                            $('#wc-email-verification-wrapper').addClass('show');
-                            $('#wc-email-verification-trigger').show();
-                        }
-                    }, 500);
                 } else {
+                    // Hide everything if email is invalid
                     $('#wc-email-verification-wrapper').removeClass('show');
                     $('#wc-email-verification-trigger').hide();
+                    $('#wc-email-verification-success').hide();
                 }
             });
             
@@ -191,7 +194,7 @@ class WC_Email_Verification_Frontend {
                 },
                 success: function(response) {
                     if (response.success && response.data.verified) {
-                        // Email is already verified, show success state
+                        // Email is already verified, show success state and hide trigger
                         jQuery('#wc-email-verification-wrapper').addClass('show');
                         jQuery('#wc-email-verification-trigger').hide();
                         jQuery('#wc-email-verification-code-section').hide();
@@ -203,6 +206,18 @@ class WC_Email_Verification_Frontend {
                         // Set verification state
                         if (typeof WCEmailVerification !== 'undefined') {
                             WCEmailVerification.state.emailVerified = true;
+                        }
+                    } else {
+                        // Email is not verified, show trigger and hide success
+                        jQuery('#wc-email-verification-trigger').show();
+                        jQuery('#wc-email-verification-success').hide();
+                        
+                        // Disable register button
+                        jQuery('button[type="submit"][name="register"]').prop('disabled', true).addClass('disabled');
+                        
+                        // Set verification state
+                        if (typeof WCEmailVerification !== 'undefined') {
+                            WCEmailVerification.state.emailVerified = false;
                         }
                     }
                 }
